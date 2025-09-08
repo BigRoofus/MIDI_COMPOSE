@@ -14,10 +14,8 @@ _VST Integration:_ The application supports real-time audio playback through Vir
 
 **Real-Time Processing Architecture**
 
-The application operates on a continuous, real-time processing model, deviating from traditional menu-driven workflows. All features, including analysis, transformations, and generative functions, are active and computed in the background.
+The application uses a real-time, continuous processing model that moves away from traditional, menu-driven workflows. All features, including analysis, transformations, and generative functions, run in the background as dynamic filters that provide real-time suggestions and modifications to the MIDI data. This creates a WYSIWYG environment and a live feedback loop, giving users immediate visual feedback and allowing them to instantly decide whether to apply computational results to the score.
 
-_Dynamic Filtering:_ These background processes serve as dynamic filters, providing real-time suggestions and modifications to the MIDI data. Users can toggle the visibility of these filters to preview their effects on the score.
+# MIDI_COMPOSE
 
-_Live Feedback Loop:_ This approach creates a "What-You-See-Is-What-You-Get" (WYSIWYG) environment, where users receive instantaneous visual feedback on potential changes. The system functions as a live feedback loop, allowing for immediate decisions on incorporating or discarding computational results.
-
-MIDI_COMPOSE is distributed as a standalone Windows executable (.exe). The Python source code is compiled into C-level bytecode using Nuitka, which optimizes performance for a low-latency user experience. The distribution does not require an installer and includes a custom application icon.
+ is distributed as a standalone Windows executable (.exe). The Python source code is compiled into C-level bytecode using Nuitka, which optimizes performance for a low-latency user experience. The distribution does not require an installer and includes a custom application icon.
