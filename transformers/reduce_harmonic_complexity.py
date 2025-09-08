@@ -7,89 +7,12 @@
 MIDI Voice Reducer
 Reduces polyphonic MIDI files to a specified number of voices using dissonance-based note selection.
 """
-
 import sys
 import os
 import subprocess
 from collections import defaultdict
 
-def install_package(package):
-    """Install a package using pip."""
-    try:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-        return True
-    except subprocess.CalledProcessError:
-        return False
-
-def check_and_install_dependencies():
-    """Check for required packages and install them if missing."""
-    required_packages = {
-        'mido': 'mido',
-        'tkinter': None  # tkinter is built-in, but we'll check it separately
-    }
-    
-    print("🔍 Checking dependencies...")
-    
-    # Check mido
-    try:
-        import mido
-        print("   ✅ mido - OK")
-    except ImportError:
-        print("   ❌ mido - Not found, installing...")
-        if install_package('mido'):
-            print("   ✅ mido - Installed successfully")
-            import mido
-        else:
-            print("   ❌ Failed to install mido. Please install manually with: pip install mido")
-            return False
-    
-    # Check tkinter
-    try:
-        import tkinter
-        from tkinter import filedialog
-        print("   ✅ tkinter - OK")
-    except ImportError:
-        print("   ❌ tkinter - Not available")
-        print("      tkinter is usually included with Python, but seems to be missing.")
-        print("      On Ubuntu/Debian: sudo apt-get install python3-tk")
-        print("      On macOS: tkinter should be included with Python")
-        print("      On Windows: tkinter should be included with Python")
-        return False
-    
-    print("   🎉 All dependencies are ready!")
-    return True
-
-# Check dependencies before importing
-if not check_and_install_dependencies():
-    input("\nPress Enter to exit...")
-    sys.exit(1)
-
-# Now we can safely import
-import mido
-from tkinter import filedialog
-import tkinter as tk
-
 class MidiVoiceReducer:
-    # Dissonance ranking from most to least dissonant (semitones from root)
-    DISSONANCE_RANKING = {
-        6: 'Tritone',           # Most dissonant
-        10: 'Minor Seventh',
-        11: 'Major Seventh', 
-        1: 'Minor Second',
-        2: 'Major Second',
-        8: 'Minor Sixth',
-        9: 'Major Sixth',
-        3: 'Minor Third',
-        4: 'Major Third',
-        5: 'Perfect Fourth',
-        7: 'Perfect Fifth',
-        12: 'Octave'            # Least dissonant
-    }
-    
-    # Key profiles for major and minor keys (Krumhansl-Schmuckler)
-    MAJOR_KEY_PROFILE = [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88]
-    MINOR_KEY_PROFILE = [6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17]
-    
     def __init__(self, input_file, output_file, max_voices, consonance_preference=0, key_analysis_window=6, min_key_duration=2):
         self.input_file = input_file
         self.output_file = output_file
