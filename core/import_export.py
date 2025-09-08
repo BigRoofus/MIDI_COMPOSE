@@ -1,4 +1,19 @@
-# This feature will contain all the functionality for loading and saving 
-# MIDI files. It will handle the parsing of .mid files to import musical 
-# data into the application and the conversion of the app's internal 
-# data back into a standard .mid file format for export.
+"""MIDI file import/export functionality"""
+from typing import Optional
+from .midi_data import MidiDocument
+
+class MidiImporter:
+    @staticmethod
+    def load_file(filename: str) -> Optional[MidiDocument]:
+        """Load MIDI file and return MidiDocument"""
+        try:
+            return MidiDocument.from_midi_file(filename)
+        except Exception as e:
+            print(f"Import error: {e}")
+            return None
+
+class MidiExporter:
+    @staticmethod
+    def save_file(document: MidiDocument, filename: str) -> bool:
+        """Save MidiDocument to MIDI file"""
+        return document.to_midi_file(filename)
