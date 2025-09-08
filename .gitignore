@@ -1,0 +1,9 @@
+.env
+.DS_Store
+.vscode/
+desktop.ini
+target/
+build/
+dist/
+node_modules/
+logo_design_src/
