@@ -1,4 +1,5 @@
 # This is an old pre-existing file, it
+# currently exports midi, we just need the not that
 # may need to be refactored using imports, and etc
 
 # This feature is used to combine multiple
