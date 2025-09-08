@@ -1,6 +1,7 @@
 MIDI_COMPOSE is a pure MIDI sequencing and editing application written in Python. Its primary interface is a piano roll that facilitates comprehensive note manipulation, including adjusting pitch, timing, duration, and velocity.
 
 Key Features:
+
 Piano Roll: Allows for independent adjustment of note position (up/down and left/right) and duration (start/end points). Users can add or remove notes as needed.
 
 Customizable Grid: A visual grid aids in note placement and can be set to common or complex time signatures without affecting MIDI data playback.
