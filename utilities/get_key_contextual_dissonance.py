@@ -1,8 +1,11 @@
-def get_key_contextual_dissonance(self, note, key_root, mode, interval_from_chord_root):
-	"""
-	Calculate dissonance based on key context.
-	Returns higher scores for more dissonant notes (what we want to keep).
-	"""
+"""
+Calculate dissonance based on key context.
+Returns higher scores for more dissonant notes (what we want to keep).
+"""
+from .dissonance_ranking import DISSONANCE_RANKING
+
+def get_key_contextual_dissonance(note, key_root, mode, interval_from_chord_root):
+
 	# Get the note's position in the key
 	note_in_key = (note - key_root) % 12
 	
@@ -31,8 +34,8 @@ def get_key_contextual_dissonance(self, note, key_root, mode, interval_from_chor
 		base_score = 4
 	
 	# Adjust based on interval from chord root (your original logic)
-	if interval_from_chord_root in self.DISSONANCE_RANKING:
-		interval_score = list(self.DISSONANCE_RANKING.keys()).index(interval_from_chord_root)
+	if interval_from_chord_root in DISSONANCE_RANKING:
+		interval_score = list(DISSONANCE_RANKING.keys()).index(interval_from_chord_root)
 		# Combine key context with interval dissonance
 		return min(base_score + interval_score // 2, 15)
 	

@@ -1,4 +1,4 @@
-def select_notes_by_dissonance(self, notes):
+def select_notes_by_dissonance(notes):
 	"""
 	Select notes based on dissonance rules with key awareness:
 	1. Analyze key context

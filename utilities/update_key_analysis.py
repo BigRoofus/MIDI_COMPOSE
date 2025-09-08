@@ -1,5 +1,5 @@
 # where is this called? do we need this?
-def update_key_analysis(self, current_measure, detected_key):
+def update_key_analysis(current_measure, detected_key):
 	"""
 	Update key analysis with stability checking.
 	Only reports key changes that are sustained over multiple measures.

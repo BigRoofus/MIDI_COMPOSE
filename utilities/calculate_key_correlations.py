@@ -1,6 +1,9 @@
-def calculate_key_correlation(self, pitch_profile, root, mode):
-	"""Calculate correlation between pitch profile and key template."""
-	template = self.MAJOR_KEY_PROFILE if mode == 'major' else self.MINOR_KEY_PROFILE
+"""Calculate correlation between pitch profile and key template."""
+
+from .Krumhansl_Schmuckler_scale import MAJOR_KEY_PROFILE, MINOR_KEY_PROFILE
+
+def calculate_key_correlation(pitch_profile, root, mode):
+    template = MAJOR_KEY_PROFILE if mode == 'major' else MINOR_KEY_PROFILE
 	
 	# Rotate template to match the root
 	rotated_template = template[root:] + template[:root]

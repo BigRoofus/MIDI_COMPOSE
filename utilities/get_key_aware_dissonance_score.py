@@ -11,17 +11,21 @@ def get_key_aware_dissonance_score(root_note, note, context_notes, current_key=N
                                  key_confidence=0.0, consonance_preference=0):
     interval = get_interval_from_root(root_note, note)
     
-    # If we have key context, use it
     if current_key and key_confidence > 0.6:
         key_root, mode = current_key[:2]
         base_score = get_key_contextual_dissonance(note, key_root, mode, interval)
     else:
-        # Use original dissonance ranking
         if interval in DISSONANCE_RANKING:
-            # Lower index = more dissonant, so invert the score
             base_score = list(DISSONANCE_RANKING.keys()).index(interval)
         else:
-            base_score = 12  # Unknown interval, least priority
+            base_score = 12
     
-    # Rest of your implementation...
+    # Apply consonance preference adjustments
+    if consonance_preference < 0:
+        adjusted_score = 15 - base_score  # Prefer dissonant
+    elif consonance_preference > 0:
+        adjusted_score = base_score  # Prefer consonant
+    else:
+        adjusted_score = base_score  # Neutral
+    
     return adjusted_score
