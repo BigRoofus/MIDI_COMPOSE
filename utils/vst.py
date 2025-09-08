@@ -1,1 +1,2 @@
-# This feature will handle all importing and selecintg of VSTs
+# This feature will handle all instantion of VSTs for MIDI_COMPOSE,
+# as well as allowing adjustment of VST parameters.
