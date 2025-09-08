@@ -5,6 +5,7 @@ Key Features:
 Piano Roll: Allows for independent adjustment of note position (up/down and left/right) and duration (start/end points). Users can add or remove notes as needed.
 
 Customizable Grid: A visual grid aids in note placement and can be set to common or complex time signatures without affecting MIDI data playback.
+The grid has a comprehensive list of meters and time signatures it can be set to, everything from one bar (whole note), to 1/4 note, to 16th note, etc. As well as complex, odd, and mixed meters, and more exotic meters.
 
 Velocity Editor: A dedicated panel synchronized with the piano roll provides precise control over note volume, with a range of 1-127.
 
