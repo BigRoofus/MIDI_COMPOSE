@@ -1,4 +1,4 @@
-# The user experience for MIDI Compose is built around a sleek, dark-gray 
+# The user experience for MIDI_COMPOSE is built around a sleek, dark-gray 
 # GUI that's designed to be easy on the eyes, presented in a low-contrast 
 # environment that's perfect for long editing sessions. The layout is fully 
 # responsive, with all elements seamlessly adjusting to the size of the 
