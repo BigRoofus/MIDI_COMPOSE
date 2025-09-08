@@ -1,3 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache/
+.coverage
+.venv/
+venv/
+config.json
 .env
 .DS_Store
 .vscode/
