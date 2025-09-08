@@ -8,7 +8,7 @@ _Piano Roll Interface:_ The primary UI facilitates direct note editing, enabling
 
 _Customizable Grid System:_ A visual grid aids in the precise placement of notes. This grid can be configured to standard, complex, odd, and mixed meters, including a comprehensive list of time signatures, without affecting MIDI playback.
 
-_Velocity Editor:_ A dedicated, synchronized panel allows for fine-grained control of note velocity, offering a dynamic range of 1-127.
+_Velocity Editor:_ A dedicated, synchronized Velocity Editor provides fine-grained control over note dynamics. Bezeir cruve type tools allow the user to make precise dynamic adjustments over time.  Want a mathematically precise 20 bar crescendo? You got it. Want a mathemtcially correct y(t)=20⋅sin(πt) sine wave for your dynamics? You got it.
 
 _VST Integration:_ The application supports real-time audio playback through Virtual Studio Technology (VST) instruments (e.g., Kontakt, Spitfire LABS). However, it does not support the import, export, or editing of audio files.
 
