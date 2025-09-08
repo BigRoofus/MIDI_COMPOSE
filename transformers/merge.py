@@ -1,9 +1,13 @@
-#!/usr/bin/env python3
-"""
-MIDI File Combiner - Layered Mode
-Combines multiple MIDI files into a single layered composition.
-"""
+# This is an old pre-existing file, it
+# may need to be refactored using imports, and etc
 
+# This feature is used to combine multiple
+# MIDI files, and/or single MIDI files with multiple tracks
+# into one single MIDI file with only one track
+# eliminating any duplicate notes
+
+
+#!/usr/bin/env python3
 import os
 import sys
 
@@ -54,8 +58,8 @@ def select_midi_files():
     file_paths = filedialog.askopenfilenames(
         title="Select MIDI files to combine",
         filetypes=[
-            ("MIDI files", "*.mid"),
-            ("MIDI files", "*.midi"),
+            ("midi files", "*.mid"),
+            ("midi files", "*.midi"),
             ("All files", "*.*")
         ]
     )

@@ -1,3 +1,7 @@
+# This is an old pre-exsting file
+# It may need to be modified to be more modular
+# (using imports and etc)
+
 #!/usr/bin/env python3
 """
 MIDI Voice Reducer
@@ -717,7 +721,7 @@ def select_midi_file():
     file_path = filedialog.askopenfilename(
         title="Select MIDI file",
         filetypes=[
-            ("MIDI files", "*.mid *.midi"),
+            ("midi files", "*.mid *.midi"),
             ("All files", "*.*")
         ],
         initialdir=os.getcwd()
@@ -743,7 +747,7 @@ def select_midi_files():
     file_paths = filedialog.askopenfilenames(
         title="Select MIDI files",
         filetypes=[
-            ("MIDI files", "*.mid *.midi"),
+            ("midi files", "*.mid *.midi"),
             ("All files", "*.*")
         ],
         initialdir=os.getcwd()

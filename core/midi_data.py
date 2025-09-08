@@ -27,7 +27,7 @@ class EventType(Enum):
 @dataclass
 class MidiNote:
     """Represents a single MIDI note with start/end times"""
-    pitch: int                    # 0-127
+    pitch: int                   # 0-127
     start_time: int              # Absolute time in ticks
     end_time: int                # Absolute time in ticks
     velocity: int = 64           # 0-127

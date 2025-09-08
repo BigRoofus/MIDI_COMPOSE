@@ -593,7 +593,7 @@ def select_midi_file():
         
         filename = filedialog.askopenfilename(
             title="Select MIDI file for motif analysis",
-            filetypes=[("MIDI files", "*.mid *.midi"), ("All files", "*.*")]
+            filetypes=[("MIDI files", "*.mid *.MIDI"), ("All files", "*.*")]
         )
         
         root.destroy()
