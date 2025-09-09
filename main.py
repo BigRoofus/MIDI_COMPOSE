@@ -230,6 +230,12 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle('Fusion')  # Modern look
     
+    # Set application icon (shows in taskbar, alt-tab, etc.)
+    icon_path = os.path.join(os.path.dirname(__file__), "favicon.ico")
+    if os.path.exists(icon_path):
+        from PyQt6.QtGui import QIcon
+        app.setWindowIcon(QIcon(icon_path))
+    
     window = SimpleMidiWindow()
     window.show()
     
