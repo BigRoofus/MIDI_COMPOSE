@@ -20,4 +20,4 @@ The application uses a real-time, continuous processing model that moves away fr
 
 # MIDI_COMPOSE
 
- is distributed as a standalone Windows executable (.exe). The Python source code is compiled into C-level bytecode using Nuitka, which optimizes performance for a low-latency user experience. The distribution does not require an installer and includes a custom application icon.
+ is distributed as a standalone Windows executable (.exe). The Python source code is compiled into C-level bytecode using Nuitka, which optimizes performance for a low-latency user experience.
