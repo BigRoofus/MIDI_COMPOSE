@@ -7,13 +7,13 @@ import os
 @dataclass
 class AppSettings:
     # Audio settings
-    sample_rate: int = 44100
+    sample_rate: int = 48000
     buffer_size: int = 512
     audio_device: str = "default"
     
     # MIDI settings
-    default_velocity: int = 64
-    default_tempo: int = 120
+    default_velocity: int = 90
+    default_tempo: int = 90
     quantize_strength: float = 1.0
     
     # Analysis settings
