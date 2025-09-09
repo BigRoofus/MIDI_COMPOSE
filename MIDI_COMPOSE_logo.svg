@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="3000"
+   height="3000"
+   viewBox="105 0 750 750"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   sodipodi:docname="MIDI_COMPOSE_logo.svg"
+   inkscape:export-filename="MIDI_COMPOSE_logo.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#383838"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="0.02"
+     inkscape:cx="-2050"
+     inkscape:cy="-2100"
+     inkscape:window-width="1920"
+     inkscape:window-height="1006"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:#ededed;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.499999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000;stop-opacity:1"
+       id="rect503"
+       width="750"
+       height="750"
+       x="105"
+       y="0" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:198.831px;line-height:1.25;font-family:'Crystal Radio Kit';-inkscape-font-specification:'Crystal Radio Kit, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;letter-spacing:-7.22014px;word-spacing:0px;text-anchor:middle;fill:#4b4b4b;fill-opacity:1;stroke-width:0.25"
+       x="486.19296"
+       y="523.85376"
+       id="text399"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:198.831px;font-family:'Crystal Radio Kit';-inkscape-font-specification:'Crystal Radio Kit, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#4b4b4b;fill-opacity:1;stroke-width:0.25"
+         x="482.58289"
+         y="523.85376"
+         id="tspan397">comp</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:198.831px;line-height:1.25;font-family:'Crystal Radio Kit';-inkscape-font-specification:'Crystal Radio Kit, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;letter-spacing:27.1371px;word-spacing:0px;text-anchor:middle;fill:#4b4b4b;fill-opacity:1;stroke-width:0.25"
+       x="199.97942"
+       y="384.10831"
+       id="text233"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:198.831px;font-family:'Crystal Radio Kit';-inkscape-font-specification:'Crystal Radio Kit, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;text-anchor:start;fill:#4b4b4b;fill-opacity:1;stroke-width:0.25"
+         x="199.97942"
+         y="384.10831"
+         id="tspan398">midi</tspan></text>
+  </g>
+</svg>
