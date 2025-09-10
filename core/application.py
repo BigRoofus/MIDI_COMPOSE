@@ -1,6 +1,6 @@
 """Main application controller"""
 from core.midi_data import MidiDocument
-from config.settings import AppSettings
+from config import AppSettings
 from analysis import KeyAnalyzer, DissonanceCalculator
 
 class MidiApplication:

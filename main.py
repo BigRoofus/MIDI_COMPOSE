@@ -116,7 +116,7 @@ def create_gui_application():
         
         # Import our modules
         from core.midi_data import MidiDocument
-        from config.settings import AppSettings
+        from config import AppSettings
         from ui.main_window import MainWindow
         
         logger.info("Starting GUI application...")
@@ -163,7 +163,7 @@ def create_console_application():
     """Create console application with full functionality"""
     try:
         from core.midi_data import MidiDocument
-        from config.settings import AppSettings
+        from config import AppSettings
         
         logger.info("Starting console application...")
         

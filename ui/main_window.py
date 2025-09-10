@@ -12,7 +12,7 @@ except ImportError:
         def __init__(self): pass
 
 from core.midi_data import MidiDocument
-from config.settings import AppSettings
+from config import AppSettings
 
 class MainWindow(QMainWindow):
     def __init__(self, document: MidiDocument, settings: AppSettings):
