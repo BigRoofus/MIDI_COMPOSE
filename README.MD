@@ -14,11 +14,11 @@ sine wave? You got it.
 
 **Advanced Grid System** 
 
-A visual grid that can aid in the precise placement of notes, Advanced Grid can be configured to standard, complex, odd, and mixed meters, including a comprehensive list of time signatures, without affecting MIDI playback. Have you been working on this comp for awhile and forgot what Grid setting the composition initially had? Never fear, there is a reset button that allows you to instantly go back to the Grid settings from the last save.
+A visual grid that helps with the precise placement of notes, Advanced Grid can be configured to standard, complex, odd, and mixed meters, including a comprehensive list of time signatures, with a starting point that can be freely shifted anywhere, and these changes never effect the structure of the original midi file, or affecting MIDI playback. If you have you been working on something for so long that you forgot what Grid setting the composition initially had, never fear, there is a reset button that allows you to instantly go back to the Grid settings that existed when you opend the midid file.
 
 **Standard Piano Roll Interface**
 
-The primary UI facilitates direct note editing, enabling users to independently modify pitch, timing, duration, and velocity. Notes can be added, deleted, or adjusted by their start and end points. Any user familiar with piano roll software will be instantly at home.
+The primary UI facilitates the same standard direct note editing featured in most modern DAWs, enabling users to independently modify pitch, timing, duration, and velocity. Notes can be added, deleted, or adjusted by their start and end points. Any user familiar with piano roll software will be instantly at home.  Also, the user can drag over a selection of notes, and then alter the length of them using the GUI.
 
 **VST Integration** 
 
