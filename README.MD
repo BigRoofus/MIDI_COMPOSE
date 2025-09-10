@@ -11,8 +11,15 @@ mico uses a real-time, continuous processing model that moves away from traditio
 
 **MusicDNA**
 
-MusicDNA is a radical new approach to analyzing and creating musical compositions. This tool analyzes and reduces MIDI data into its core musical structure, 
-resulting in a detailed blueprint that provides a clear and concise understanding of the music's construction. MusicaDNA performs a bar-by-bar sliding analysis, going beyond a simple note list, to identify the building blocks of a composition based on pitch set changes, and a Jaccard similarity metric to determine if a new section is musically different from the one before it. The analysis also pinpoints the main motif and calculates the note density, offering a concise, data-driven summary that's perfect for composers, analysts, and anyone looking to deconstruct music at a fundamental level. The resulting analysis can be saved as an external file (.musdna extension, in JSON format) and re-used again later as a transform on other MIDI.
+MusicDNA is a radical new approach to analyzing and creating musical compositions. 
+
+MusicaDNA performs a bar-by-bar sliding analysis, going beyond a simple note list to identify the building blocks of a composition based on pitch set changes, and a Jaccard similarity metric to determine if a new section is musically different from the one before it. The analysis also pinpoints the main motif and calculates the note density, offering a concise, data-driven summary that's perfect for composers, analysts, and anyone looking to deconstruct music at a fundamental level. 
+
+MusicDNA analyzes and reduces MIDI data to its core musical structure, resulting in a detailed blueprint that provides a clear and concise understanding of the music's construction. 
+
+The resulting analysis/summary can then be saved as an external file (.musdna extension, in JSON format, see: musdna_format.txt for possibilities)., and re-used again later as a transform.
+
+The analysis is performed through a bar-by-bar sliding process that goes beyond a simple note list, identifying a composition's building blocks using changes in pitch sets and a Jaccard similarity metric to determine if new sections are musically distinct. The system also pinpoints the main motif and calculates note density, providing a clear, data-driven summary perfect for composers, analysts, and anyone who wants to deconstruct music on a fundamental level. This blueprint can be saved as an external file (.musdna extension, in JSON format) and used later as a transform.
 <br><br>
 
 **Advanced Velocity Editor** 
