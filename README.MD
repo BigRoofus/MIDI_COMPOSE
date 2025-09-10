@@ -14,7 +14,7 @@ sine wave? You got it.
 
 **Advanced Grid System** 
 
-A visual grid that can aid in the precise placement of notes, Advanced Grid can be configured to standard, complex, odd, and mixed meters, including a comprehensive list of time signatures, without affecting MIDI playback. Have you been working on this comp for awhile and forgot what Grid setting the composition initially had? Never fear, there is a reset button that allows you to instantly go back to the Grid settings int the last save.
+A visual grid that can aid in the precise placement of notes, Advanced Grid can be configured to standard, complex, odd, and mixed meters, including a comprehensive list of time signatures, without affecting MIDI playback. Have you been working on this comp for awhile and forgot what Grid setting the composition initially had? Never fear, there is a reset button that allows you to instantly go back to the Grid settings from the last save.
 
 **Standard Piano Roll Interface**
 
