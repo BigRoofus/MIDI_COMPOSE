@@ -11,17 +11,7 @@ mico uses a real-time, continuous processing model that moves away from traditio
 
 **MusicDNA**
 
-MusicDNA is a radical new approach to analyzing and creating musical compositions. 
-
-An analysis is run, analyzes and reduces MIDI data to its core musical structure, resulting in a detailed blueprint that provides a clear and concise understanding of the music's construction. 
-
-MusicDNA is more than just a analysis tool, but a format, a type of blueprint.
-The resulting blueprint can then be saved as an external file (.musdna extension, in JSON format, see: musdna_format.txt for possibilities)., and re-used again later as a transform.
-
-MusicaDNA performs a bar-by-bar sliding analysis of the MIDI data, going beyond a simple note list to identify the building blocks of a composition based on pitch set changes and a Jaccard similarity metric. The analysis also pinpoints the main motif and calculates note density, offering a concise, data-driven summary that's perfect for composers, analysts, and anyone looking to deconstruct music at a fundamental level. 
-
-
-and anyone who wants to deconstruct music on a fundamental level. This blueprint can be saved as an external file (.musdna extension, in JSON format) and used later as a transform.
+MusicDNA is a radical new approach to analyzing and creating musical compositions. More than just an analysis tool, MusicDNA is a blueprint and a data format. During analysis, MusicDNA performs a bar-by-bar sliding analysis of MIDI data, resulting in a detailed blueprint that provides a clear and concise understanding of the music's construction. It goes beyond a simple note list to identify the building blocks of a composition based on pitch set changes and a Jaccard similarity metric. The analysis also pinpoints the main motif and calculates note density, offering a concise, data-driven summary that's perfect for composers, analysts, and anyone looking to deconstruct music at a fundamental level. This blueprint can then be saved as an external file (.musdna extension, in JSON format) and reused later as a transform.
 <br>
 <br>
 
