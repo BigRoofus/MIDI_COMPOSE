@@ -103,7 +103,42 @@ def analyze_midi_to_musdna(midi_path, similarity_threshold=0.7):
 
     print(f"Saved musical DNA to {out_path}")
 
-
 # Example usage
 if __name__ == "__main__":
     analyze_midi_to_musdna("string_quartet.mid")
+
+
+# .musdna JSON format
+# {
+# "work_title": "Quartet_X",
+# "timeline": [
+# 	{
+# 	"count": 0,
+# 	"pitch_set": [0, 2, 5, 7, 9],
+# 	"motifs": [
+# 		{"intervals": [2, -1], "rhythm": [1, 0.5, 0.5]}
+# 	],
+# 	"density": 0.42,
+# 	"form": "A"
+# 	},
+# 	{
+# 	"count": 24,
+# 	"pitch_set": [4, 5, 8, 11],
+# 	"motifs": [
+# 		{"intervals": [-3, 4], "rhythm": [0.5, 1]}
+# 	],
+# 	"density": 0.67,
+# 	"form": "B"
+# 	},
+# 	{
+# 	"count": 48,
+# 	"pitch_set": [0, 2, 5, 7, 9],
+# 	"motifs": [
+# 		{"intervals": [2, -1], "rhythm": [1, 0.5, 0.5]}
+# 	],
+# 	"density": 0.40,
+# 	"form": "A"
+# 	}
+# ],
+# "form_string": "ABA"
+# }
