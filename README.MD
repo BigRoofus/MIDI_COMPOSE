@@ -4,22 +4,22 @@ mico, pronounced "mee-ko," short for MIDI_COMPOSE, is a MIDI sequencing and edit
 
 **Real-Time Processing Architecture**
 
-The application uses a real-time, continuous processing model that moves away from traditional, menu-driven workflows. All features, including analysis, transformations, and generative functions, run in the background as dynamic filters that provide real-time suggestions and modifications to the MIDI data. This creates a WYSIWYG environment and a live feedback loop, giving users immediate visual feedback and allowing them to instantly decide whether to apply computational results to the score.
+mico uses a real-time, continuous processing model that moves away from traditional, menu-driven workflows. All features, including analysis, transformations, and generative functions, run in the background as dynamic filters that provide real-time suggestions and modifications to the MIDI data. This creates a WYSIWYG environment and a live feedback loop, giving users immediate visual feedback and allowing them to instantly decide whether to apply computational results to the score.
 
-**Customizable Grid System** 
+**Advanced Velocity Editor** 
 
-A visual grid aids in the precise placement of notes. This grid can be configured to standard, complex, odd, and mixed meters, including a comprehensive list of time signatures, without affecting MIDI playback.
+A completely new and revolutionary Velocity Editor gives you more than just fine-grained control over note by note dynamics. The mico Velocity Editor provides a much more imaginative and comprehensive approach, giving you extreme control. With a Dynamics Curve tool with three-point (cubic Bezier) curve editing, a Freehand Draw tool, and a Classic Shapes tool with default shapes such as triangle, oval, polygon, inverted shape, etc., you can now create precise, complex, and mathematically correct dynamic adjustments over any length of time. Want a mathematically precise 20 bar crescendo? You got it. Want a mathematically correct 
+$y(t) = 20 \cdot \sin(\pi t)$ 
+sine wave? You got it.
 
-**VST Integration** 
+**Advanced Grid System** 
 
-The application supports real-time audio playback through Virtual Studio Technology (VST) instruments (e.g., Kontakt, Spitfire LABS). However, it does not support the import, export, or editing of audio files.
+A visual grid that can aid in the precise placement of notes, Advanced Grid can be configured to standard, complex, odd, and mixed meters, including a comprehensive list of time signatures, without affecting MIDI playback.
 
 **Standard Piano Roll Interface**
 
 The primary UI facilitates direct note editing, enabling users to independently modify pitch, timing, duration, and velocity. Notes can be added, deleted, or adjusted by their start and end points. Any user familiar with piano roll software will be instantly at home.
 
-**Advanced Velocity Editor** 
+**VST Integration** 
 
-A completely new, revolutionary Velocity Editor gives you more than just fine-grained control over note by note dynamics. The mico Velocity Editor provides a much more imaginative and comprehensive approach, giving you extreme control. A Dynamics Curve tool with three-point (cubic Bezier) curve editing, a Freehand Draw tool, and a Classic Shapes tool with default shapes such as triangle, oval, polygon, inverted shape, etc. You can now create precise, complex, and mathematically correct dynamic adjustments over any length of time. Want a mathematically precise 20 bar crescendo? You got it. Want a mathematically correct 
-$y(t) = 20 \cdot \sin(\pi t)$ 
-sine wave? You got it.
+The application supports real-time audio playback through Virtual Studio Technology (VST) instruments (e.g., Kontakt, Spitfire LABS). However, it does not support the import, export, or editing of audio files.
