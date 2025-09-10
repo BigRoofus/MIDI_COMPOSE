@@ -2,7 +2,6 @@ import numpy as np
 from typing import List, Optional, Tuple, Dict, Union
 from dataclasses import dataclass
 from collections import deque, defaultdict
-# Assuming these are available from the original project structure
 from core.midi_data import MidiDocument, MidiNote 
 from utils.music_theory import MAJOR_KEY_PROFILE, MINOR_KEY_PROFILE, get_key_name
 
