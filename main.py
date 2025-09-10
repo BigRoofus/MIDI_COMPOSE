@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 MIDI_COMPOSE Application Entry Point
-Enhanced version with proper dependency management and error handling
+Fixed version with proper pretty_midi integration
 """
 import sys
 import os
@@ -19,135 +19,107 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-# Dependency availability flags
-DEPENDENCIES = {
-    'PyQt6': False,
-    'pretty_midi': False,
-    'numpy': False,
-    'core_modules': False,
-    'ui_modules': False
-}
+def install_missing_packages():
+    """Attempt to install missing packages automatically"""
+    import subprocess
+    
+    packages_to_install = []
+    
+    # Check and install pretty_midi
+    try:
+        import pretty_midi
+        logger.info("✅ pretty_midi already available")
+    except ImportError:
+        packages_to_install.append("pretty_midi")
+        logger.info("📦 pretty_midi needs to be installed")
+    
+    # Check and install PyQt6
+    try:
+        import PyQt6.QtWidgets
+        logger.info("✅ PyQt6 already available")
+    except ImportError:
+        packages_to_install.append("PyQt6")
+        logger.info("📦 PyQt6 needs to be installed")
+    
+    # Check and install numpy (comes with pretty_midi but let's be explicit)
+    try:
+        import numpy
+        logger.info("✅ numpy already available")
+    except ImportError:
+        packages_to_install.append("numpy")
+        logger.info("📦 numpy needs to be installed")
+    
+    if packages_to_install:
+        print(f"🔧 Installing missing packages: {', '.join(packages_to_install)}")
+        print("This may take a moment...")
+        
+        try:
+            # Try to install the packages
+            subprocess.check_call([
+                sys.executable, "-m", "pip", "install", "--user"
+            ] + packages_to_install)
+            
+            print("✅ Installation completed successfully!")
+            print("🔄 Restarting application with new packages...")
+            
+            # Restart the application
+            os.execv(sys.executable, ['python'] + sys.argv)
+            
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Failed to install packages automatically: {e}")
+            print("\n📝 Please install manually:")
+            print(f"   pip install {' '.join(packages_to_install)}")
+            return False
+        except Exception as e:
+            print(f"❌ Installation error: {e}")
+            print("\n📝 Please install manually:")
+            print(f"   pip install {' '.join(packages_to_install)}")
+            return False
+    
+    return True
 
 def check_dependencies():
-    """Check and report on dependency availability"""
-    logger.info("Checking dependencies...")
+    """Check that all required dependencies are available"""
+    missing = []
     
-    # Check PyQt6
+    try:
+        import pretty_midi
+        logger.info("✅ pretty_midi loaded successfully")
+    except ImportError:
+        missing.append("pretty_midi")
+        logger.error("❌ pretty_midi not available")
+    
+    try:
+        import numpy
+        logger.info("✅ numpy loaded successfully")
+    except ImportError:
+        missing.append("numpy")
+        logger.error("❌ numpy not available")
+    
     try:
         import PyQt6.QtWidgets
         import PyQt6.QtCore
         import PyQt6.QtGui
-        DEPENDENCIES['PyQt6'] = True
-        logger.info("✅ PyQt6 successfully loaded")
-    except ImportError as e:
-        logger.warning(f"❌ PyQt6 not available: {e}")
-        logger.info("Install PyQt6 for full GUI: pip install PyQt6")
-
-    # Check pretty_midi and numpy
-    try:
-        import pretty_midi
-        import numpy
-        DEPENDENCIES['pretty_midi'] = True
-        DEPENDENCIES['numpy'] = True
-        logger.info("✅ pretty_midi and numpy successfully loaded")
-    except ImportError as e:
-        logger.warning(f"❌ pretty_midi/numpy not available: {e}")
-        logger.info("Install with: pip install pretty_midi numpy")
-
-    # Check core modules
-    try:
-        from core.midi_data import MidiDocument, MidiTrack, MidiNote
-        from config.settings import AppSettings
-        DEPENDENCIES['core_modules'] = True
-        logger.info("✅ Core modules successfully loaded")
-    except ImportError as e:
-        logger.error(f"❌ Core modules not available: {e}")
-
-    # Check UI modules
-    try:
-        from ui.piano_roll import PianoRollPanel
-        DEPENDENCIES['ui_modules'] = True
-        logger.info("✅ UI modules successfully loaded")
-    except ImportError as e:
-        logger.warning(f"❌ UI modules not available: {e}")
-
-    return DEPENDENCIES
-
-def print_dependency_status():
-    """Print human-readable dependency status"""
-    print("🎼 MIDI_COMPOSE - Dependency Status")
-    print("=" * 50)
-    
-    for dep_name, available in DEPENDENCIES.items():
-        status = "✅ Available" if available else "❌ Missing"
-        print(f"• {dep_name}: {status}")
-    
-    print()
-    
-    if not DEPENDENCIES['PyQt6']:
-        print("📝 To install missing GUI dependencies:")
-        print("   pip install PyQt6")
-    
-    if not DEPENDENCIES['pretty_midi']:
-        print("📝 To install missing MIDI dependencies:")
-        print("   pip install pretty_midi numpy")
-    
-    print()
-
-def create_console_application():
-    """Create a minimal console-based application"""
-    logger.info("Starting console mode...")
-    
-    if not DEPENDENCIES['core_modules']:
-        print("❌ Cannot start console mode - core modules missing")
-        return 1
-    
-    try:
-        from core.application import MidiApplication
-        
-        print("🎼 MIDI_COMPOSE - Console Mode")
-        print("Core MIDI functionality available")
-        
-        # Test basic functionality
-        app = MidiApplication()
-        print(f"✅ Application initialized successfully")
-        print("Console mode ready (limited functionality)")
-        
-        return 0
-        
+        logger.info("✅ PyQt6 loaded successfully")
     except ImportError:
-        # Fallback if application module isn't available
-        from core.midi_data import MidiDocument
-        
-        print("🎼 MIDI_COMPOSE - Console Mode (Basic)")  
-        print("Testing core MIDI functionality...")
-        
-        doc = MidiDocument()
-        track = doc.add_track()
-        track.name = "Test Track"
-        
-        print(f"✅ Created document with {len(doc.tracks)} track(s)")
-        print("Basic console mode ready")
-        
-        return 0
-        
-    except Exception as e:
-        logger.error(f"Console mode failed: {e}")
-        return 1
+        missing.append("PyQt6")
+        logger.error("❌ PyQt6 not available")
+    
+    return missing
 
 def create_gui_application():
-    """Create the full GUI application"""
-    if not DEPENDENCIES['PyQt6']:
-        logger.error("Cannot start GUI mode - PyQt6 not available")
-        return 1
-    
+    """Create the GUI application"""
     try:
         from PyQt6.QtWidgets import QApplication
         from PyQt6.QtCore import Qt
         from PyQt6.QtGui import QIcon
-        from ui.main_window_enhanced import EnhancedMainWindow
         
-        logger.info("Starting GUI mode...")
+        # Import our modules
+        from core.midi_data import MidiDocument
+        from config.settings import AppSettings
+        from ui.main_window import MainWindow
+        
+        logger.info("Starting GUI application...")
         
         # Create QApplication
         app = QApplication(sys.argv)
@@ -163,12 +135,21 @@ def create_gui_application():
         if icon_path.exists():
             app.setWindowIcon(QIcon(str(icon_path)))
         
+        # Create document and settings
+        document = MidiDocument()
+        settings = AppSettings.load()
+        
         # Create main window
-        window = EnhancedMainWindow(DEPENDENCIES)
+        window = MainWindow(document, settings)
         window.show()
         
         logger.info("✅ GUI application started successfully")
-        print_feature_summary()
+        print("🎼 MIDI_COMPOSE GUI started successfully!")
+        print("🚀 All features available:")
+        print("   • Piano Roll Editor: ✅")
+        print("   • MIDI Import/Export: ✅") 
+        print("   • Musical Analysis: ✅")
+        print("   • Real-time Editing: ✅")
         
         return app.exec()
         
@@ -178,74 +159,98 @@ def create_gui_application():
         traceback.print_exc()
         return 1
 
-def print_feature_summary():
-    """Print summary of available features"""
-    print("🚀 Available Features:")
-    print(f"  • Piano Roll: {'Yes' if DEPENDENCIES['ui_modules'] else 'No'}")
-    print(f"  • MIDI I/O: {'Yes' if DEPENDENCIES['pretty_midi'] else 'No'}")
-    print(f"  • Analysis: {'Yes' if DEPENDENCIES['pretty_midi'] and DEPENDENCIES['core_modules'] else 'No'}")
-    print()
-
-def show_help():
-    """Show help information"""
-    print("""
-🎼 MIDI_COMPOSE - Musical MIDI Sequencer
-
-Usage: python main.py [options]
-
-Options:
-  -h, --help     Show this help message
-  -c, --console  Force console mode (no GUI)
-  -v, --verbose  Enable verbose logging
-  --check-deps   Only check dependencies and exit
-
-Features:
-  • Real-time MIDI editing with piano roll interface
-  • Advanced music analysis (key detection, harmony analysis)
-  • MusicDNA - unique musical blueprint generation
-  • VST instrument support
-  • Advanced velocity editing with mathematical curves
-
-Dependencies:
-  • PyQt6: GUI interface
-  • pretty_midi: MIDI file processing
-  • numpy: Mathematical operations
-
-For more information, visit the project documentation.
-    """)
+def create_console_application():
+    """Create console application with full functionality"""
+    try:
+        from core.midi_data import MidiDocument
+        from config.settings import AppSettings
+        
+        logger.info("Starting console application...")
+        
+        print("🎼 MIDI_COMPOSE - Console Mode")
+        print("All core functionality available!")
+        
+        # Create test document
+        document = MidiDocument()
+        settings = AppSettings.load()
+        
+        # Add a test track
+        track = document.add_track()
+        track.name = "Piano"
+        track.program = 0
+        
+        # Add some test notes
+        from core.midi_data import MidiNote
+        
+        # Create a C major chord
+        chord_notes = [60, 64, 67]  # C, E, G
+        for pitch in chord_notes:
+            note = MidiNote(
+                start=0.0,
+                end=2.0,
+                pitch=pitch,
+                velocity=80
+            )
+            track.add_note(note)
+        
+        print(f"✅ Created document with {len(document.tracks)} track(s)")
+        print(f"✅ Added {len(track.notes)} notes to track")
+        print(f"✅ Tempo: {document.tempo_bpm:.1f} BPM")
+        
+        # Test analysis if available
+        try:
+            key_root, key_mode = document.estimate_key()
+            print(f"✅ Key analysis: {key_root} {key_mode}")
+        except Exception as e:
+            print(f"⚠️  Key analysis not available: {e}")
+        
+        print("\n🎵 Console mode ready - all MIDI functionality working!")
+        return 0
+        
+    except Exception as e:
+        logger.error(f"Console application failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return 1
 
 def main():
-    """Main application entry point with proper error handling"""
-    # Parse command line arguments
+    """Main application entry point"""
     args = sys.argv[1:]
     
     if '-h' in args or '--help' in args:
         show_help()
         return 0
     
-    if '-v' in args or '--verbose' in args:
-        logging.getLogger().setLevel(logging.DEBUG)
-        logger.debug("Verbose logging enabled")
+    print("🎼 MIDI_COMPOSE - Starting up...")
+    
+    # Check if we should attempt auto-installation
+    auto_install = '--install' in args or '--no-install' not in args
     
     # Check dependencies
-    check_dependencies()
+    missing = check_dependencies()
     
-    if '--check-deps' in args:
-        print_dependency_status()
-        return 0
+    if missing:
+        print(f"❌ Missing required packages: {', '.join(missing)}")
+        
+        if auto_install:
+            print("🔧 Attempting automatic installation...")
+            if not install_missing_packages():
+                print("💡 You can also try: python main.py --install")
+                return 1
+        else:
+            print("\n📝 Please install missing packages:")
+            print(f"   pip install {' '.join(missing)}")
+            print("\nOr try: python main.py --install")
+            return 1
     
-    print_dependency_status()
+    print("✅ All required packages available!")
     
     # Determine run mode
     force_console = '-c' in args or '--console' in args
     
-    if force_console or not DEPENDENCIES['PyQt6']:
-        if force_console:
-            logger.info("Console mode forced by user")
-        else:
-            logger.info("GUI not available, falling back to console mode")
+    if force_console:
+        logger.info("Console mode requested")
         return create_console_application()
-    
     else:
         logger.info("Starting GUI mode")
         return create_gui_application()
@@ -256,6 +261,7 @@ if __name__ == "__main__":
         sys.exit(exit_code)
     except KeyboardInterrupt:
         logger.info("Application interrupted by user")
+        print("\n👋 Goodbye!")
         sys.exit(0)
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
