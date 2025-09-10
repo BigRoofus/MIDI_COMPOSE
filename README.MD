@@ -1,6 +1,6 @@
-<img src="MIDI_COMPOSE_logov4.png" alt="A beautiful sunset" width="450" height="250">
+<img src="MIDI_COMPOSE_logov4.png" alt="A beautiful sunset" width="450" height="275">
 
-&emsp;mico, pronounced "mee-ko," short for MIDI_COMPOSE, is a MIDI sequencing and editing application designed for comprehensive musical data manipulation.
+mico, pronounced "mee-ko," short for MIDI_COMPOSE, is a MIDI sequencing and editing application designed for comprehensive musical data manipulation.
 
 **Real-Time Processing Architecture**
 
