@@ -1,7 +1,3 @@
-"""
-Enhanced Piano Roll Widget - pretty_midi Integration
-Updated to work with the new pretty_midi-based MidiDocument
-"""
 import sys
 import os
 from typing import List, Optional, Tuple, Dict, Set

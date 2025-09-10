@@ -1,3 +1,53 @@
+"""
+MusicDNA is a radical new approach to analyzing and creating musical 
+compositions. More than just an analysis tool, MusicDNA is a blueprint 
+and a data format. During analysis, MusicDNA performs a bar-by-bar 
+sliding analysis of MIDI data, resulting in a detailed blueprint that 
+provides a clear and concise understanding of the music's construction. 
+It goes beyond a simple note list to identify the building blocks of a 
+composition based on pitch set changes and a Jaccard similarity metric. 
+The analysis also pinpoints the main motif and calculates note density, 
+offering a concise, data-driven summary that's perfect for composers, 
+analysts, and anyone looking to deconstruct music at a fundamental level. 
+This blueprint can then be saved as an external file (.musdna extension, 
+in JSON format) and reused later as a transform.
+
+.musdna JSON format
+{
+"work_title": "Quartet_X",
+"timeline": [
+	{
+	"count": 0,
+	"pitch_set": [0, 2, 5, 7, 9],
+	"motifs": [
+		{"intervals": [2, -1], "rhythm": [1, 0.5, 0.5]}
+	],
+	"density": 0.42,
+	"form": "A"
+	},
+	{
+	"count": 24,
+	"pitch_set": [4, 5, 8, 11],
+	"motifs": [
+		{"intervals": [-3, 4], "rhythm": [0.5, 1]}
+	],
+	"density": 0.67,
+	"form": "B"
+	},
+	{
+	"count": 48,
+	"pitch_set": [0, 2, 5, 7, 9],
+	"motifs": [
+		{"intervals": [2, -1], "rhythm": [1, 0.5, 0.5]}
+	],
+	"density": 0.40,
+	"form": "A"
+	}
+],
+"form_string": "ABA"
+}
+"""
+
 import pretty_midi
 import json
 import os
@@ -108,37 +158,3 @@ if __name__ == "__main__":
     analyze_midi_to_musdna("string_quartet.mid")
 
 
-# .musdna JSON format
-# {
-# "work_title": "Quartet_X",
-# "timeline": [
-# 	{
-# 	"count": 0,
-# 	"pitch_set": [0, 2, 5, 7, 9],
-# 	"motifs": [
-# 		{"intervals": [2, -1], "rhythm": [1, 0.5, 0.5]}
-# 	],
-# 	"density": 0.42,
-# 	"form": "A"
-# 	},
-# 	{
-# 	"count": 24,
-# 	"pitch_set": [4, 5, 8, 11],
-# 	"motifs": [
-# 		{"intervals": [-3, 4], "rhythm": [0.5, 1]}
-# 	],
-# 	"density": 0.67,
-# 	"form": "B"
-# 	},
-# 	{
-# 	"count": 48,
-# 	"pitch_set": [0, 2, 5, 7, 9],
-# 	"motifs": [
-# 		{"intervals": [2, -1], "rhythm": [1, 0.5, 0.5]}
-# 	],
-# 	"density": 0.40,
-# 	"form": "A"
-# 	}
-# ],
-# "form_string": "ABA"
-# }
