@@ -20,6 +20,6 @@ The primary UI facilitates direct note editing, enabling users to independently 
 
 **Advanced Velocity Editor** 
 
-A dedicated, synchronized Velocity Editor provides fine-grained control over note dynamics. Bezeir curve type tools allow the user to make precise dynamic adjustments over time.  Want a mathematically precise 20 bar crescendo? You got it. Want a mathemtcially correct 
+A dedicated, revolutionary Velocity Editor provides more than just fine-grained control over note dynamics. Bezeir curve type tools allow the user to make precise dynamic adjustments over time.  Want a mathematically precise 20 bar crescendo? You got it. Want a mathemtcially correct 
 $y(t) = 20 \cdot \sin(\pi t)$ 
 sine wave for your dynamics? You got it.
