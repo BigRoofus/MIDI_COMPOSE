@@ -39,9 +39,14 @@ The primary UI facilitates the same standard piano roll note editing as most mod
 
 The application supports real-time audio playback through Virtual Studio Technology (VST) instruments (e.g., Kontakt, Spitfire LABS). However, it does not support the import, export, or editing of audio files.
 
-**Usage:** 
+**CLI Usage:** 
 Options:
+
   -h, --help     Show this help message
+
   -c, --console  Force console mode (no GUI)
+
   -v, --verbose  Enable verbose logging
+
   --check-deps   Only check dependencies and exit
+  
