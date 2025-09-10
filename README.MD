@@ -6,7 +6,8 @@ mico, pronounced "mee-ko," short for MIDI_COMPOSE, is a MIDI sequencing and edit
 **Real-Time Processing Architecture**
 
 mico uses a real-time, continuous processing model that moves away from traditional, menu-driven workflows. All features, including analysis, transformations, and generative functions, run in the background as dynamic filters that provide real-time suggestions and modifications to the MIDI data. This creates a WYSIWYG environment and a live feedback loop, giving users immediate visual feedback and allowing them to instantly decide whether to apply computational results to the score.
-<br><br><br>
+<br>
+<br>
 
 **MusicDNA**
 
@@ -16,8 +17,6 @@ An analysis is run, analyzes and reduces MIDI data to its core musical structure
 
 MusicDNA is more than just a analysis tool, but a format, a type of blueprint.
 The resulting blueprint can then be saved as an external file (.musdna extension, in JSON format, see: musdna_format.txt for possibilities)., and re-used again later as a transform.
-
-
 
 MusicaDNA performs a bar-by-bar sliding analysis of the MIDI data, going beyond a simple note list to identify the building blocks of a composition based on pitch set changes and a Jaccard similarity metric. The analysis also pinpoints the main motif and calculates note density, offering a concise, data-driven summary that's perfect for composers, analysts, and anyone looking to deconstruct music at a fundamental level. 
 
@@ -31,7 +30,8 @@ and anyone who wants to deconstruct music on a fundamental level. This blueprint
 A completely new and revolutionary Velocity Editor gives you more than just fine-grained control over individual note dynamics. The Advanced Velocity Editor provides a much more imaginative and comprehensive approach. With tools like the Dynamics Curve Tool for three-point cubic Bezier curve editing, the Freehand Draw Tool for drawing any dynamic curve by hand, the Mathematical Formula Input Tool for entering precise math, and the Classic Shapes Tool (triangle, oval, polygon, invert shape...), the Advanced Velocity Editor gives you next level control over your composition's dynamics. Want a mathematically precise 20 bar crescendo? You got it. Want a mathematically correct 
 $y(t) = 20 \cdot \sin(\pi t)$ 
 sine wave? You got it.
-<br><br>
+<br>
+<br>
 
 **Advanced Grid System** 
 
