@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-MIDI Data Model - Core Classes
-Comprehensive internal representation for MIDI data with editing capabilities.
+MIDI Data Model - Refactored for pretty_midi
+Enhanced version using pretty_midi as the foundation while maintaining MIDI_COMPOSE API
 """
 
-import mido
+import pretty_midi
+import numpy as np
 from typing import List, Dict, Optional, Tuple, Set, Iterator
 from dataclasses import dataclass, field
 from collections import defaultdict
@@ -14,73 +15,114 @@ import bisect
 
 class EventType(Enum):
     """MIDI event types for internal representation"""
-    NOTE_ON = "note_on"
-    NOTE_OFF = "note_off"
     CONTROL_CHANGE = "control_change"
     PROGRAM_CHANGE = "program_change"
     PITCH_BEND = "pitch_bend"
     AFTERTOUCH = "aftertouch"
-    TEMPO = "set_tempo"
-    TIME_SIGNATURE = "time_signature"
-    KEY_SIGNATURE = "key_signature"
 
 @dataclass
 class MidiNote:
-    """Represents a single MIDI note with start/end times"""
-    pitch: int                   # 0-127
-    start_time: int              # Absolute time in ticks
-    end_time: int                # Absolute time in ticks
-    velocity: int = 64           # 0-127
-    channel: int = 0             # 0-15
-    selected: bool = False       # For UI selection state
+    """
+    Enhanced MIDI note class that wraps pretty_midi.Note
+    Provides backward compatibility with existing API while leveraging pretty_midi
+    """
+    start: float                    # Start time in seconds (pretty_midi standard)
+    end: float                      # End time in seconds
+    pitch: int                      # MIDI pitch (0-127)
+    velocity: int = 64              # Velocity (0-127)
+    selected: bool = False          # For UI selection state
+    
+    def __post_init__(self):
+        """Ensure valid ranges"""
+        self.pitch = max(0, min(127, self.pitch))
+        self.velocity = max(0, min(127, self.velocity))
+        self.start = max(0.0, self.start)
+        self.end = max(self.start, self.end)
     
     @property
-    def duration(self) -> int:
-        """Duration in ticks"""
-        return max(0, self.end_time - self.start_time)
+    def duration(self) -> float:
+        """Duration in seconds"""
+        return max(0.0, self.end - self.start)
     
     @duration.setter
-    def duration(self, value: int):
-        """Set duration, updating end_time"""
-        self.end_time = self.start_time + max(0, value)
+    def duration(self, value: float):
+        """Set duration, updating end time"""
+        self.end = self.start + max(0.0, value)
     
     @property
     def pitch_class(self) -> int:
         """Get pitch class (0-11) for harmonic analysis"""
         return self.pitch % 12
     
+    @property
+    def start_time(self) -> float:
+        """Backward compatibility property"""
+        return self.start
+    
+    @start_time.setter
+    def start_time(self, value: float):
+        """Backward compatibility setter"""
+        self.start = value
+    
+    @property
+    def end_time(self) -> float:
+        """Backward compatibility property"""
+        return self.end
+    
+    @end_time.setter
+    def end_time(self, value: float):
+        """Backward compatibility setter"""
+        self.end = value
+    
     def overlaps(self, other: 'MidiNote') -> bool:
         """Check if this note overlaps with another note"""
-        return not (self.end_time <= other.start_time or other.end_time <= self.start_time)
+        return not (self.end <= other.start or other.end <= self.start)
     
-    def contains_time(self, time: int) -> bool:
+    def contains_time(self, time: float) -> bool:
         """Check if the given time falls within this note"""
-        return self.start_time <= time < self.end_time
+        return self.start <= time < self.end
     
     def transpose(self, semitones: int):
         """Transpose note by semitones, clamping to valid MIDI range"""
         self.pitch = max(0, min(127, self.pitch + semitones))
     
+    def to_pretty_midi_note(self) -> pretty_midi.Note:
+        """Convert to pretty_midi.Note object"""
+        return pretty_midi.Note(
+            start=self.start,
+            end=self.end,
+            pitch=self.pitch,
+            velocity=self.velocity
+        )
+    
+    @classmethod
+    def from_pretty_midi_note(cls, pm_note: pretty_midi.Note) -> 'MidiNote':
+        """Create MidiNote from pretty_midi.Note"""
+        return cls(
+            start=pm_note.start,
+            end=pm_note.end,
+            pitch=pm_note.pitch,
+            velocity=pm_note.velocity
+        )
+    
     def copy(self) -> 'MidiNote':
         """Create a deep copy of this note"""
         return MidiNote(
+            start=self.start,
+            end=self.end,
             pitch=self.pitch,
-            start_time=self.start_time,
-            end_time=self.end_time,
             velocity=self.velocity,
-            channel=self.channel,
             selected=False  # Don't copy selection state
         )
 
 @dataclass
 class MidiEvent:
     """Represents non-note MIDI events (control changes, etc.)"""
-    time: int                    # Absolute time in ticks
+    time: float                     # Time in seconds
     event_type: EventType
-    channel: int = 0            # 0-15
-    data1: int = 0              # Controller number, program number, etc.
-    data2: int = 0              # Value
-    meta_data: Optional[bytes] = None  # For meta events
+    channel: int = 0               # 0-15
+    data1: int = 0                 # Controller number, program number, etc.
+    data2: int = 0                 # Value
     
     def copy(self) -> 'MidiEvent':
         """Create a deep copy of this event"""
@@ -89,171 +131,252 @@ class MidiEvent:
             event_type=self.event_type,
             channel=self.channel,
             data1=self.data1,
-            data2=self.data2,
-            meta_data=self.meta_data.copy() if self.meta_data else None
+            data2=self.data2
         )
 
 class MidiTrack:
-    """Represents a single MIDI track with notes and events"""
+    """
+    Enhanced MIDI track that wraps pretty_midi.Instrument
+    Maintains existing API while leveraging pretty_midi features
+    """
     
-    def __init__(self, name: str = "Untitled Track", channel: int = 0):
+    def __init__(self, name: str = "Untitled Track", program: int = 0, is_drum: bool = False):
         self.name = name
-        self.channel = channel
-        self.notes: List[MidiNote] = []
+        self.program = program
+        self.is_drum = is_drum
+        
+        # Create underlying pretty_midi instrument
+        self._pm_instrument = pretty_midi.Instrument(
+            program=program,
+            is_drum=is_drum,
+            name=name
+        )
+        
+        # Our enhanced note objects (wrapping pretty_midi notes)
+        self._notes: List[MidiNote] = []
         self.events: List[MidiEvent] = []
+        
+        # Track properties
         self.muted = False
         self.solo = False
         self.volume = 100           # 0-127
         self.pan = 64              # 0-127 (64 = center)
-        self.program = 0           # 0-127 (instrument)
         
         # For UI state
         self.visible = True
         self.color = "#4A90E2"     # Default track color
         
-        # Keep notes sorted by start time for efficient operations
-        self._notes_sorted = True
-        self._events_sorted = True
+        # Channel is derived from program for compatibility
+        self.channel = program % 16
+    
+    @property
+    def notes(self) -> List[MidiNote]:
+        """Get all notes in the track"""
+        return self._notes
     
     def add_note(self, note: MidiNote):
         """Add a note to the track"""
-        note.channel = self.channel  # Ensure note matches track channel
-        self.notes.append(note)
-        self._notes_sorted = False
+        self._notes.append(note)
+        # Sync with pretty_midi instrument
+        self._pm_instrument.notes.append(note.to_pretty_midi_note())
     
     def remove_note(self, note: MidiNote) -> bool:
         """Remove a note from the track. Returns True if found and removed."""
         try:
-            self.notes.remove(note)
+            index = self._notes.index(note)
+            del self._notes[index]
+            # Also remove from pretty_midi instrument
+            del self._pm_instrument.notes[index]
             return True
-        except ValueError:
+        except (ValueError, IndexError):
             return False
     
     def add_event(self, event: MidiEvent):
         """Add an event to the track"""
-        event.channel = self.channel  # Ensure event matches track channel
         self.events.append(event)
-        self._events_sorted = False
+        
+        # Convert to pretty_midi control change if applicable
+        if event.event_type == EventType.CONTROL_CHANGE:
+            cc = pretty_midi.ControlChange(
+                number=event.data1,
+                value=event.data2,
+                time=event.time
+            )
+            self._pm_instrument.control_changes.append(cc)
     
-    def _ensure_notes_sorted(self):
-        """Ensure notes are sorted by start time"""
-        if not self._notes_sorted:
-            self.notes.sort(key=lambda n: n.start_time)
-            self._notes_sorted = True
-    
-    def _ensure_events_sorted(self):
-        """Ensure events are sorted by time"""
-        if not self._events_sorted:
-            self.events.sort(key=lambda e: e.time)
-            self._events_sorted = True
-    
-    def get_notes_at_time(self, time: int) -> List[MidiNote]:
+    def get_notes_at_time(self, time: float) -> List[MidiNote]:
         """Get all notes playing at the specified time"""
-        return [note for note in self.notes if note.contains_time(time)]
+        return [note for note in self._notes if note.contains_time(time)]
     
-    def get_notes_in_range(self, start_time: int, end_time: int) -> List[MidiNote]:
+    def get_notes_in_range(self, start_time: float, end_time: float) -> List[MidiNote]:
         """Get all notes that overlap with the specified time range"""
-        self._ensure_notes_sorted()
-        result = []
-        for note in self.notes:
-            if note.start_time >= end_time:
-                break  # Notes are sorted, so we can stop here
-            if note.end_time > start_time:
-                result.append(note)
-        return result
+        return [note for note in self._notes 
+                if note.start < end_time and note.end > start_time]
     
     def get_notes_in_pitch_range(self, low_pitch: int, high_pitch: int) -> List[MidiNote]:
         """Get all notes within the specified pitch range (inclusive)"""
-        return [note for note in self.notes if low_pitch <= note.pitch <= high_pitch]
+        return [note for note in self._notes 
+                if low_pitch <= note.pitch <= high_pitch]
     
-    def quantize_notes(self, grid_size: int, strength: float = 1.0):
-        """Quantize note start times to grid. Strength 0.0-1.0"""
-        for note in self.notes:
-            grid_time = round(note.start_time / grid_size) * grid_size
-            note.start_time = int(note.start_time + (grid_time - note.start_time) * strength)
-        self._notes_sorted = False
+    def quantize_notes(self, grid_size: float, strength: float = 1.0, selected_only: bool = False):
+        """
+        Quantize note start times to grid. 
+        
+        Args:
+            grid_size: Grid size in seconds
+            strength: Quantization strength (0.0-1.0)
+            selected_only: Only quantize selected notes
+        """
+        for note in self._notes:
+            if not selected_only or note.selected:
+                grid_time = round(note.start / grid_size) * grid_size
+                note.start = note.start + (grid_time - note.start) * strength
+        
+        self._sync_with_pretty_midi()
     
     def transpose_notes(self, semitones: int, selected_only: bool = False):
-        """Transpose all notes (or just selected ones) by semitones"""
-        for note in self.notes:
+        """Transpose notes by semitones"""
+        for note in self._notes:
             if not selected_only or note.selected:
                 note.transpose(semitones)
+        
+        self._sync_with_pretty_midi()
     
     def get_selected_notes(self) -> List[MidiNote]:
         """Get all currently selected notes"""
-        return [note for note in self.notes if note.selected]
+        return [note for note in self._notes if note.selected]
     
     def select_all_notes(self):
         """Select all notes in the track"""
-        for note in self.notes:
+        for note in self._notes:
             note.selected = True
     
     def clear_selection(self):
         """Clear selection from all notes"""
-        for note in self.notes:
+        for note in self._notes:
             note.selected = False
     
-    def get_time_bounds(self) -> Tuple[int, int]:
+    def get_time_bounds(self) -> Tuple[float, float]:
         """Get the start and end times of all content in the track"""
-        if not self.notes and not self.events:
-            return (0, 0)
+        if not self._notes and not self.events:
+            return (0.0, 0.0)
         
         min_time = float('inf')
-        max_time = 0
+        max_time = 0.0
         
-        for note in self.notes:
-            min_time = min(min_time, note.start_time)
-            max_time = max(max_time, note.end_time)
+        for note in self._notes:
+            min_time = min(min_time, note.start)
+            max_time = max(max_time, note.end)
         
         for event in self.events:
             min_time = min(min_time, event.time)
             max_time = max(max_time, event.time)
         
-        return (int(min_time) if min_time != float('inf') else 0, int(max_time))
+        return (min_time if min_time != float('inf') else 0.0, max_time)
+    
+    def get_pitch_classes_at_time(self, time: float) -> Set[int]:
+        """Get all pitch classes playing at specified time"""
+        notes_at_time = self.get_notes_at_time(time)
+        return {note.pitch_class for note in notes_at_time}
+    
+    def get_harmony_at_time(self, time: float) -> List[int]:
+        """Get all pitches for harmony analysis at specified time"""
+        notes_at_time = self.get_notes_at_time(time)
+        return [note.pitch for note in notes_at_time]
+    
+    def _sync_with_pretty_midi(self):
+        """Synchronize our notes with the underlying pretty_midi instrument"""
+        # Clear and rebuild pretty_midi notes
+        self._pm_instrument.notes.clear()
+        for note in self._notes:
+            self._pm_instrument.notes.append(note.to_pretty_midi_note())
     
     def copy(self) -> 'MidiTrack':
         """Create a deep copy of this track"""
-        new_track = MidiTrack(name=f"{self.name} Copy", channel=self.channel)
-        new_track.notes = [note.copy() for note in self.notes]
+        new_track = MidiTrack(
+            name=f"{self.name} Copy", 
+            program=self.program, 
+            is_drum=self.is_drum
+        )
+        new_track._notes = [note.copy() for note in self._notes]
         new_track.events = [event.copy() for event in self.events]
         new_track.muted = self.muted
         new_track.solo = self.solo
         new_track.volume = self.volume
         new_track.pan = self.pan
-        new_track.program = self.program
         new_track.visible = self.visible
         new_track.color = self.color
+        new_track._sync_with_pretty_midi()
         return new_track
 
 class MidiDocument:
-    """Main document class containing all MIDI data"""
+    """
+    Enhanced document class built on pretty_midi.PrettyMIDI
+    Provides advanced music analysis while maintaining existing API
+    """
     
     def __init__(self):
-        self.tracks: List[MidiTrack] = []
-        self.ticks_per_beat = 480
-        self.tempo_bpm = 120
-        self.time_signature = (4, 4)  # (numerator, denominator)
-        self.key_signature = (0, True)  # (sharps/flats, is_major)
+        # Create underlying pretty_midi object
+        self._pm = pretty_midi.PrettyMIDI()
         
-        # Document state
+        # Our enhanced track objects
+        self.tracks: List[MidiTrack] = []
+        
+        # Document properties
         self.filename = "Untitled.mid"
         self.modified = False
         
         # Timeline state for UI
-        self.current_position = 0    # Current playback/edit position in ticks
-        self.loop_start = 0
-        self.loop_end = 0
+        self.current_position = 0.0    # Current position in seconds
+        self.loop_start = 0.0
+        self.loop_end = 0.0
         self.loop_enabled = False
         
         # Selection and editing state
-        self.selected_tracks: Set[int] = set()  # Track indices
+        self.selected_tracks: Set[int] = set()
         self.clipboard: List[MidiNote] = []
+    
+    @property
+    def tempo_bpm(self) -> float:
+        """Get current tempo in BPM"""
+        return self._pm.estimate_tempo() if self._pm.instruments else 120.0
+    
+    @property
+    def time_signature(self) -> Tuple[int, int]:
+        """Get current time signature"""
+        if self._pm.time_signature_changes:
+            ts = self._pm.time_signature_changes[0]
+            return (ts.numerator, ts.denominator)
+        return (4, 4)
+    
+    @property
+    def key_signature(self) -> Tuple[int, bool]:
+        """Get current key signature"""
+        if self._pm.key_signature_changes:
+            ks = self._pm.key_signature_changes[0]
+            return (ks.key_number, ks.key_number >= 0)
+        return (0, True)
+    
+    @property
+    def resolution(self) -> int:
+        """Get resolution (ticks per beat) - for backward compatibility"""
+        return self._pm.resolution
+    
+    @property
+    def ticks_per_beat(self) -> int:
+        """Backward compatibility alias"""
+        return self.resolution
     
     def add_track(self, track: Optional[MidiTrack] = None) -> MidiTrack:
         """Add a new track to the document"""
         if track is None:
-            track = MidiTrack(name=f"Track {len(self.tracks) + 1}", channel=len(self.tracks) % 16)
+            track = MidiTrack(
+                name=f"Track {len(self.tracks) + 1}",
+                program=len(self.tracks) % 128
+            )
+        
         self.tracks.append(track)
+        self._pm.instruments.append(track._pm_instrument)
         self.modified = True
         return track
     
@@ -261,15 +384,21 @@ class MidiDocument:
         """Remove a track by index. Returns True if successful."""
         if 0 <= track_index < len(self.tracks):
             del self.tracks[track_index]
+            del self._pm.instruments[track_index]
+            
             # Update selected tracks
             self.selected_tracks.discard(track_index)
-            self.selected_tracks = {i - 1 if i > track_index else i for i in self.selected_tracks if i != track_index}
+            self.selected_tracks = {
+                i - 1 if i > track_index else i 
+                for i in self.selected_tracks 
+                if i != track_index
+            }
             self.modified = True
             return True
         return False
     
-    def get_all_notes_at_time(self, time: int) -> List[Tuple[MidiNote, int]]:
-        """Get all notes playing at time across all tracks. Returns (note, track_index) tuples."""
+    def get_all_notes_at_time(self, time: float) -> List[Tuple[MidiNote, int]]:
+        """Get all notes playing at time across all tracks"""
         result = []
         for track_idx, track in enumerate(self.tracks):
             if not track.muted:
@@ -277,46 +406,63 @@ class MidiDocument:
                 result.extend([(note, track_idx) for note in notes])
         return result
     
-    def get_chord_at_time(self, time: int) -> List[int]:
+    def get_chord_at_time(self, time: float) -> List[int]:
         """Get all pitches playing at the specified time (for harmony analysis)"""
         notes_and_tracks = self.get_all_notes_at_time(time)
         return [note.pitch for note, _ in notes_and_tracks]
     
-    def get_time_bounds(self) -> Tuple[int, int]:
+    def get_pitch_classes_at_time(self, time: float) -> Set[int]:
+        """Get all pitch classes at specified time across all tracks"""
+        pitch_classes = set()
+        for track in self.tracks:
+            if not track.muted:
+                pitch_classes.update(track.get_pitch_classes_at_time(time))
+        return pitch_classes
+    
+    def get_time_bounds(self) -> Tuple[float, float]:
         """Get the overall start and end times of the document"""
         if not self.tracks:
-            return (0, 0)
+            return (0.0, 0.0)
         
         min_time = float('inf')
-        max_time = 0
+        max_time = 0.0
         
         for track in self.tracks:
             track_start, track_end = track.get_time_bounds()
             min_time = min(min_time, track_start)
             max_time = max(max_time, track_end)
         
-        return (int(min_time) if min_time != float('inf') else 0, int(max_time))
+        return (min_time if min_time != float('inf') else 0.0, max_time)
     
-    def ticks_to_beats(self, ticks: int) -> float:
-        """Convert ticks to beats"""
-        return ticks / self.ticks_per_beat
+    def seconds_to_beats(self, seconds: float) -> float:
+        """Convert seconds to beats at current tempo"""
+        return seconds * (self.tempo_bpm / 60.0)
     
-    def beats_to_ticks(self, beats: float) -> int:
-        """Convert beats to ticks"""
-        return int(beats * self.ticks_per_beat)
+    def beats_to_seconds(self, beats: float) -> float:
+        """Convert beats to seconds at current tempo"""
+        return beats * (60.0 / self.tempo_bpm)
     
+    # Backward compatibility methods (convert between ticks and seconds)
     def ticks_to_seconds(self, ticks: int) -> float:
-        """Convert ticks to seconds at current tempo"""
-        beats = self.ticks_to_beats(ticks)
-        return (beats / self.tempo_bpm) * 60.0
+        """Convert ticks to seconds - backward compatibility"""
+        beats = ticks / self.resolution
+        return self.beats_to_seconds(beats)
     
     def seconds_to_ticks(self, seconds: float) -> int:
-        """Convert seconds to ticks at current tempo"""
-        beats = (seconds / 60.0) * self.tempo_bpm
-        return self.beats_to_ticks(beats)
+        """Convert seconds to ticks - backward compatibility"""
+        beats = self.seconds_to_beats(seconds)
+        return int(beats * self.resolution)
     
-    def quantize_all_tracks(self, grid_size: int, strength: float = 1.0, selected_only: bool = False):
-        """Quantize all tracks to grid"""
+    def ticks_to_beats(self, ticks: int) -> float:
+        """Convert ticks to beats - backward compatibility"""
+        return ticks / self.resolution
+    
+    def beats_to_ticks(self, beats: float) -> int:
+        """Convert beats to ticks - backward compatibility"""
+        return int(beats * self.resolution)
+    
+    def quantize_all_tracks(self, grid_size: float, strength: float = 1.0, selected_only: bool = False):
+        """Quantize all tracks to grid (grid_size in seconds)"""
         for track_idx, track in enumerate(self.tracks):
             if not selected_only or track_idx in self.selected_tracks:
                 track.quantize_notes(grid_size, strength)
@@ -336,12 +482,11 @@ class MidiDocument:
             selected_notes = track.get_selected_notes()
             self.clipboard.extend([note.copy() for note in selected_notes])
     
-    def paste_notes_at_time(self, time: int, track_index: Optional[int] = None):
+    def paste_notes_at_time(self, time: float, track_index: Optional[int] = None):
         """Paste clipboard notes at the specified time"""
         if not self.clipboard or not self.tracks:
             return
         
-        # Use first track if no track specified
         if track_index is None:
             track_index = 0
         
@@ -351,152 +496,114 @@ class MidiDocument:
         target_track = self.tracks[track_index]
         
         # Find the earliest start time in clipboard
-        earliest_time = min(note.start_time for note in self.clipboard)
+        earliest_time = min(note.start for note in self.clipboard)
         time_offset = time - earliest_time
         
         # Add offset notes to target track
         for note in self.clipboard:
             new_note = note.copy()
-            new_note.start_time += time_offset
-            new_note.end_time += time_offset
+            new_note.start += time_offset
+            new_note.end += time_offset
             target_track.add_note(new_note)
         
         self.modified = True
     
+    # Advanced analysis methods using pretty_midi
+    def estimate_key(self) -> Tuple[str, str]:
+        """Estimate the key using pretty_midi's built-in analysis"""
+        if not self._pm.instruments:
+            return ("C", "major")
+        
+        # Get key estimate from pretty_midi
+        key_number = self._pm.estimate_key()
+        
+        # Convert to readable format
+        key_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+        if key_number < 12:
+            return (key_names[key_number], "major")
+        else:
+            return (key_names[key_number - 12], "minor")
+    
+    def get_piano_roll_data(self, sampling_rate: int = 100) -> np.ndarray:
+        """Get piano roll representation for analysis"""
+        return self._pm.get_piano_roll(fs=sampling_rate)
+    
+    def get_chroma_vector(self, time: float) -> np.ndarray:
+        """Get 12-dimensional chroma vector at specified time"""
+        # Sample around the time point
+        start_time = max(0, time - 0.1)
+        end_time = time + 0.1
+        
+        chroma = np.zeros(12)
+        for track in self.tracks:
+            if track.muted:
+                continue
+            notes_in_range = track.get_notes_in_range(start_time, end_time)
+            for note in notes_in_range:
+                if note.contains_time(time):
+                    chroma[note.pitch_class] += note.velocity / 127.0
+        
+        # Normalize
+        if chroma.sum() > 0:
+            chroma /= chroma.sum()
+        
+        return chroma
+    
     @classmethod
     def from_midi_file(cls, filename: str) -> 'MidiDocument':
-        """Create MidiDocument from a MIDI file"""
+        """Create MidiDocument from a MIDI file using pretty_midi"""
         doc = cls()
         doc.filename = filename
         
         try:
-            mid = mido.MidiFile(filename)
-            doc.ticks_per_beat = mid.ticks_per_beat
+            # Load with pretty_midi
+            pm = pretty_midi.PrettyMIDI(filename)
+            doc._pm = pm
             
-            for track_idx, mido_track in enumerate(mid.tracks):
-                track = MidiTrack(name=f"Track {track_idx + 1}", channel=track_idx % 16)
+            # Convert instruments to our track format
+            for pm_instrument in pm.instruments:
+                track = MidiTrack(
+                    name=pm_instrument.name or f"Track {len(doc.tracks) + 1}",
+                    program=pm_instrument.program,
+                    is_drum=pm_instrument.is_drum
+                )
                 
-                # Convert mido messages to our internal format
-                current_time = 0
-                active_notes = {}  # note -> (start_time, velocity)
+                # Convert notes
+                for pm_note in pm_instrument.notes:
+                    note = MidiNote.from_pretty_midi_note(pm_note)
+                    track._notes.append(note)
                 
-                for msg in mido_track:
-                    current_time += msg.time
-                    
-                    if msg.type == 'note_on' and msg.velocity > 0:
-                        active_notes[msg.note] = (current_time, msg.velocity)
-                    
-                    elif msg.type == 'note_off' or (msg.type == 'note_on' and msg.velocity == 0):
-                        if msg.note in active_notes:
-                            start_time, velocity = active_notes[msg.note]
-                            note = MidiNote(
-                                pitch=msg.note,
-                                start_time=start_time,
-                                end_time=current_time,
-                                velocity=velocity,
-                                channel=msg.channel
-                            )
-                            track.add_note(note)
-                            del active_notes[msg.note]
-                    
-                    elif msg.type == 'control_change':
-                        event = MidiEvent(
-                            time=current_time,
-                            event_type=EventType.CONTROL_CHANGE,
-                            channel=msg.channel,
-                            data1=msg.control,
-                            data2=msg.value
-                        )
-                        track.add_event(event)
-                    
-                    elif msg.type == 'program_change':
-                        event = MidiEvent(
-                            time=current_time,
-                            event_type=EventType.PROGRAM_CHANGE,
-                            channel=msg.channel,
-                            data1=msg.program
-                        )
-                        track.add_event(event)
-                        track.program = msg.program
-                    
-                    elif msg.type == 'set_tempo':
-                        doc.tempo_bpm = int(60_000_000 / msg.tempo)
-                        event = MidiEvent(
-                            time=current_time,
-                            event_type=EventType.TEMPO,
-                            data1=msg.tempo
-                        )
-                        track.add_event(event)
-                
-                # Handle any notes that were never turned off
-                for note, (start_time, velocity) in active_notes.items():
-                    midi_note = MidiNote(
-                        pitch=note,
-                        start_time=start_time,
-                        end_time=current_time,  # End at track end
-                        velocity=velocity,
-                        channel=track.channel
+                # Convert control changes to events
+                for cc in pm_instrument.control_changes:
+                    event = MidiEvent(
+                        time=cc.time,
+                        event_type=EventType.CONTROL_CHANGE,
+                        data1=cc.number,
+                        data2=cc.value
                     )
-                    track.add_note(midi_note)
+                    track.events.append(event)
                 
-                doc.add_track(track)
+                doc.tracks.append(track)
             
             doc.modified = False
             return doc
             
         except Exception as e:
             print(f"Error loading MIDI file {filename}: {e}")
-            return doc  # Return empty document
+            return doc
     
     def to_midi_file(self, filename: Optional[str] = None) -> bool:
-        """Save document as MIDI file"""
+        """Save document as MIDI file using pretty_midi"""
         if filename is None:
             filename = self.filename
         
         try:
-            mid = mido.MidiFile(ticks_per_beat=self.ticks_per_beat)
-            
+            # Sync all tracks with pretty_midi
             for track in self.tracks:
-                mido_track = mido.MidiTrack()
-                mido_track.name = track.name
-                
-                # Collect all events (notes + control events)
-                all_events = []
-                
-                # Add notes as note_on/note_off pairs
-                for note in track.notes:
-                    all_events.append((note.start_time, 'note_on', note.pitch, note.velocity, note.channel))
-                    all_events.append((note.end_time, 'note_off', note.pitch, 0, note.channel))
-                
-                # Add control events
-                for event in track.events:
-                    all_events.append((event.time, event.event_type.value, event.data1, event.data2, event.channel))
-                
-                # Sort by time
-                all_events.sort()
-                
-                # Convert to mido messages with delta times
-                last_time = 0
-                for time, event_type, data1, data2, channel in all_events:
-                    delta_time = time - last_time
-                    
-                    if event_type == 'note_on':
-                        msg = mido.Message('note_on', channel=channel, note=data1, velocity=data2, time=delta_time)
-                    elif event_type == 'note_off':
-                        msg = mido.Message('note_off', channel=channel, note=data1, velocity=data2, time=delta_time)
-                    elif event_type == 'control_change':
-                        msg = mido.Message('control_change', channel=channel, control=data1, value=data2, time=delta_time)
-                    elif event_type == 'program_change':
-                        msg = mido.Message('program_change', channel=channel, program=data1, time=delta_time)
-                    else:
-                        continue  # Skip unknown event types
-                    
-                    mido_track.append(msg)
-                    last_time = time
-                
-                mid.tracks.append(mido_track)
+                track._sync_with_pretty_midi()
             
-            mid.save(filename)
+            # Save using pretty_midi
+            self._pm.write(filename)
             self.filename = filename
             self.modified = False
             return True
@@ -504,3 +611,7 @@ class MidiDocument:
         except Exception as e:
             print(f"Error saving MIDI file {filename}: {e}")
             return False
+    
+    def synthesize(self, sample_rate: int = 22050) -> np.ndarray:
+        """Synthesize audio using pretty_midi (requires fluidsynth)"""
+        return self._pm.synthesize(fs=sample_rate)
