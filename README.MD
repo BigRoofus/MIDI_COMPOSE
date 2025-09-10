@@ -8,13 +8,13 @@ mico uses a real-time, continuous processing model that moves away from traditio
 
 **Advanced Velocity Editor** 
 
-A completely new and revolutionary Velocity Editor gives you more than just fine-grained control over note by note dynamics. The mico Velocity Editor provides a much more imaginative and comprehensive approach, giving you extreme control. With a Dynamics Curve tool with three-point (cubic Bezier) curve editing, a Freehand Draw tool, and a Classic Shapes tool with default shapes such as triangle, oval, polygon, inverted shape, etc., you can now create precise, complex, and mathematically correct dynamic adjustments over any length of time. Want a mathematically precise 20 bar crescendo? You got it. Want a mathematically correct 
+A completely new and revolutionary Velocity Editor gives you more than just fine-grained control over individual note dynamics. The Advanced Velocity Editor provides a much more imaginative and comprehensive approach to dynamics. With tools like the Dynamics Curve Tool for three-point cubic Bezier curve editing, the Freehand Draw Tool for drawing any dynamic curve by hand, the Mathematical Formula Input Tool for entering precise math, and the Classic Shapes Tool (triangle, oval, polygon, invert shape...), the Advanced Velocity Editor gives you next level control over your composition's dynamics. Want a mathematically precise 20 bar crescendo? You got it. Want a mathematically correct 
 $y(t) = 20 \cdot \sin(\pi t)$ 
 sine wave? You got it.
 
 **Advanced Grid System** 
 
-A visual tool that assists in precisely placing notes within a musical composition, Advanced Grid can be configured to standard, complex, odd, and mixed meters, including any possible time signature. The starting and ending points of the grid can be freely shifted, without affecting the original MIDI file's structure or playback. If you have you been working on something for so long that you forgot what Grid setting the composition initially had, never fear, there is a reset button that allows you to instantly go back to the Grid settings that existed when you opend the midi file without channging anything else.
+The Advanced Grid is a powerful visual tool for precise note placement. It can be configured to any time signature or meter—including standard, complex, odd, and mixed—and its tempo can be freely adjusted without affecting your original MIDI file's structure or playback. If you ever lose track of your initial grid settings, a convenient reset button instantly restores them to the state they were in when you opened the file.
 
 **Standard Piano Roll Interface**
 
