@@ -14,7 +14,7 @@ from PyQt6.QtCore import Qt, QRectF, QPointF, QTimer, pyqtSignal
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.midi_data import MidiDocument, MidiTrack, MidiNote
 from config import AppSettings
-from utils.music_theory import KEY_NAMES
+from music_theory import KEY_NAMES
 
 class NoteItem(QGraphicsRectItem):
     """Enhanced graphics item for MIDI notes with pretty_midi integration"""

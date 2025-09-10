@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple, Dict, Union
 from dataclasses import dataclass
 from collections import deque, defaultdict
 from core.midi_data import MidiDocument, MidiNote 
-from utils.music_theory import MAJOR_KEY_PROFILE, MINOR_KEY_PROFILE, get_key_name
+from .music_theory import MAJOR_KEY_PROFILE, MINOR_KEY_PROFILE, get_key_name
 
 @dataclass
 class KeyAnalysisPoint:

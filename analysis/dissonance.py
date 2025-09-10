@@ -1,6 +1,6 @@
 """Dissonance calculation and ranking"""
 from typing import List, Optional, Tuple
-from utils.music_theory import DISSONANCE_RANKING, get_key_name
+from .music_theory import DISSONANCE_RANKING, get_key_name
 
 class DissonanceCalculator:
     def __init__(self, max_voices: int = 4):
