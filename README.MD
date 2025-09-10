@@ -1,8 +1,4 @@
-![A majestic lion roaming the savanna](favicon.ico)
-
-<img src="MIDI_COMPOSE_logov4.png" alt="A beautiful sunset" height="200">
-
-# mico
+<img src="MIDI_COMPOSE_logov4.png" alt="A beautiful sunset" height="250">
 
 mico, pronounced "mee-ko," short for MIDI_COMPOSE, is a MIDI sequencing and editing application designed for engineering comprehensive musical data manipulation.
 
