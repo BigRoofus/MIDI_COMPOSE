@@ -18,7 +18,7 @@ A visual tool that assists in precisely placing notes within a musical compositi
 
 **Standard Piano Roll Interface**
 
-The primary UI facilitates the same standard direct note editing featured in most modern DAWs, enabling users to independently modify pitch, timing, duration, and velocity. Notes can be added, deleted, or adjusted by their start and end points. Any user familiar with piano roll software will be instantly at home.  Also, the user can drag over a selection of notes, and then alter the length of them using the GUI.
+The primary UI facilitates the same standard direct note editing featured in most modern DAWs, enabling users to independently modify pitch, timing, duration, and velocity. Notes can be added, deleted, or adjusted by their start and end points. Any user familiar with piano roll software will be instantly at home.
 
 **VST Integration** 
 
