@@ -1,6 +1,6 @@
-# MIDI_COMPOSE
+# mico
 
-is a Python-based MIDI sequencing and editing application designed for comprehensive musical data manipulation. Its core component is an interactive piano roll, which provides users with granular control over note parameters.
+mico, pronounced "mee-ko," short for MIDI_COMPOSE, is a Python-based MIDI sequencing and editing application designed for comprehensive musical data manipulation.
 
 **Core Functionality**
 
