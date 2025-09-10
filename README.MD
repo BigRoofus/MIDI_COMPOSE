@@ -20,7 +20,7 @@ The primary UI facilitates direct note editing, enabling users to independently 
 
 **Advanced Velocity Editor** 
 
-A new revolutionary Velocity Editor gives you more than just fine-grained control over note by note dynamics. The mico Velocity Editor provides a much more imaginative and comprehensive approach, giving you extreme control over your dynamics. Using Bezier curve tools with three-point curve editing (cubic Bezier curve editing), freehand drawing tools, and tools with deafut shapes such as triangle, oval, polygon, inverted shape, etc... you can now create precise, complex, and mathematically correct dynamic adjustments over any length of time. 
+A new revolutionary Velocity Editor gives you more than just fine-grained control over note by note dynamics. The mico Velocity Editor provides a much more imaginative and comprehensive approach, giving you extreme control over your dynamics. A Dynamics Curve tool with three-point (cubic Bezier) curve editing, a freehand drawing tool, and a Classic Shapes tool with deafut shapes such as triangle, oval, polygon, inverted shape, etc... You can now create precise, complex, and mathematically correct dynamic adjustments over any length of time. 
 
 Want a mathematically precise 20 bar crescendo? You got it. Want a mathemtcially correct 
 $y(t) = 20 \cdot \sin(\pi t)$ 
