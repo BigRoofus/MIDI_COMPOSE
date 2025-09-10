@@ -43,8 +43,6 @@ The application supports real-time audio playback through Virtual Studio Technol
 
 Options:
 
--h, --help     Show this help message
-
 -c, --console  Force console mode (no GUI)
 
 -v, --verbose  Enable verbose logging
