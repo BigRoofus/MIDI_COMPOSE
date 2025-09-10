@@ -1,17 +1,10 @@
 mico, pronounced "mee-ko," short for MIDI_COMPOSE, is a MIDI sequencing and editing application designed for comprehensive musical data manipulation.
 <br>
 <br>
-<br>
 
 **Real-Time Processing Architecture**
 
 mico uses a real-time, continuous processing model that moves away from traditional, menu-driven workflows. All features, including analysis, transformations, and generative functions, run in the background as dynamic filters that provide real-time suggestions and modifications to the MIDI data. This creates a WYSIWYG environment and a live feedback loop, giving users immediate visual feedback and allowing them to instantly decide whether to apply computational results to the score.
-<br>
-<br>
-
-**MusicDNA**
-
-MusicDNA is a radical new approach to analyzing and creating musical compositions. More than just an analysis tool, MusicDNA is a blueprint and a data format. During analysis, MusicDNA performs a bar-by-bar sliding analysis of MIDI data, resulting in a detailed blueprint that provides a clear and concise understanding of the music's construction. It goes beyond a simple note list to identify the building blocks of a composition based on pitch set changes and a Jaccard similarity metric. The analysis also pinpoints the main motif and calculates note density, offering a concise, data-driven summary that's perfect for composers, analysts, and anyone looking to deconstruct music at a fundamental level. This blueprint can then be saved as an external file (.musdna extension, in JSON format) and reused later as a transform.
 <br>
 <br>
 
@@ -34,18 +27,3 @@ The Advanced Grid is a powerful visual tool for precise note placement. It can b
 The primary UI facilitates the same standard piano roll note editing as most modern DAWs, enabling users to independently modify pitch, timing, duration, and velocity. Notes can be added, deleted, or adjusted by their start and end points. Any user familiar with a piano roll editor will be instantly at home.
 <br>
 <br>
-
-**VST Integration** 
-
-The application supports real-time audio playback through Virtual Studio Technology (VST) instruments (e.g., Kontakt, Spitfire LABS). However, it does not support the import, export, or editing of audio files.
-
-**CLI Usage:** 
-
-Options:
-
--c, --console  Force console mode (no GUI)
-
--v, --verbose  Enable verbose logging
-
---check-deps   Only check dependencies and exit
-  
