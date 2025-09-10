@@ -1,3 +1,5 @@
+![A majestic lion roaming the savanna](favicon.ico)
+
 # mico
 
 mico, pronounced "mee-ko," short for MIDI_COMPOSE, is a MIDI sequencing and editing application designed for engineering comprehensive musical data manipulation.
