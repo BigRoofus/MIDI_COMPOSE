@@ -130,11 +130,6 @@ def create_gui_application():
         app.setApplicationVersion("2.1.0")
         app.setOrganizationName("MIDI_COMPOSE")
         
-        # Try to set application icon
-        icon_path = PROJECT_ROOT / "assets" / "favicon.ico"
-        if icon_path.exists():
-            app.setWindowIcon(QIcon(str(icon_path)))
-        
         # Create document and settings
         document = MidiDocument()
         settings = AppSettings.load()
