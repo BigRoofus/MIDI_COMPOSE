@@ -1,6 +1,6 @@
 ![A majestic lion roaming the savanna](favicon.ico)
 
-<img src="favicon.ico" alt="A beautiful sunset" height="200">
+<img src="MIDI_COMPOSE_logov4.png" alt="A beautiful sunset" height="200">
 
 # mico
 
