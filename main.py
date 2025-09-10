@@ -1,4 +1,30 @@
-#!/usr/bin/env python3
+if self.document and CORE_AVAILABLE:
+            try:
+                start_time, end_time = self.document.get_time_bounds()
+                total_notes = sum(len(track.notes) for track in self.document.tracks)
+                tempo = self.document.tempo_bpm  # This is now safe due to our fix
+                
+                status_info += f"""
+• File: {self.document.filename}
+• Modified: {'Yes' if self.document.modified else 'No'}
+• Tracks: {len(self.document.tracks)}
+• Total Notes: {total_notes:,}
+• Duration: {end_time:.2f}s
+• Tempo: {tempo:.1f} BPM
+• Time Signature: {self.document.time_signature[0]}/{self.document.time_signature[1]}
+
+🎹 Track Summary:"""
+                
+                for i, track in enumerate(self.document.tracks):
+                    note_count = len(track.notes)
+                    track_start, track_end = track.get_time_bounds()
+                    status_info += f"""
+  Track {i+1}: {track.name}
+    • Program: {track.program} ({'Drums' if track.is_drum else 'Instrument'})
+    • Notes: {note_count:,}
+    • Duration: {track_start:.2f}s - {track_end:.2f}s"""
+                    
+            except Exception as#!/usr/bin/env python3
 """
 MIDI Application Entry Point - Enhanced Version with Piano Roll
 Updated to integrate piano roll widget and fix dependency checking

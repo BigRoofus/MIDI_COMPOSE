@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MIDI Data Model - Refactored for pretty_midi
+MIDI Data Model - Refactored for pretty_midi with robust error handling
 Enhanced version using pretty_midi as the foundation while maintaining MIDI_COMPOSE API
 """
 
@@ -312,7 +312,7 @@ class MidiTrack:
 class MidiDocument:
     """
     Enhanced document class built on pretty_midi.PrettyMIDI
-    Provides advanced music analysis while maintaining existing API
+    Provides advanced music analysis while maintaining existing API with robust error handling
     """
     
     def __init__(self):
@@ -335,11 +335,31 @@ class MidiDocument:
         # Selection and editing state
         self.selected_tracks: Set[int] = set()
         self.clipboard: List[MidiNote] = []
+        
+        # Default tempo (will be overridden if tempo can be estimated)
+        self._default_tempo = 120.0
     
     @property
     def tempo_bpm(self) -> float:
-        """Get current tempo in BPM"""
-        return self._pm.estimate_tempo() if self._pm.instruments else 120.0
+        """Get current tempo in BPM with robust error handling"""
+        try:
+            # Only try to estimate if we have instruments with enough notes
+            if self._pm.instruments:
+                total_notes = sum(len(inst.notes) for inst in self._pm.instruments)
+                if total_notes >= 2:
+                    return self._pm.estimate_tempo()
+            
+            # Fall back to default tempo
+            return self._default_tempo
+            
+        except (ValueError, Exception):
+            # If tempo estimation fails for any reason, return default
+            return self._default_tempo
+    
+    @tempo_bpm.setter
+    def tempo_bpm(self, value: float):
+        """Set the default tempo"""
+        self._default_tempo = max(20.0, min(300.0, value))  # Reasonable tempo range
     
     @property
     def time_signature(self) -> Tuple[int, int]:
@@ -510,23 +530,31 @@ class MidiDocument:
     
     # Advanced analysis methods using pretty_midi
     def estimate_key(self) -> Tuple[str, str]:
-        """Estimate the key using pretty_midi's built-in analysis"""
+        """Estimate the key using pretty_midi's built-in analysis with error handling"""
         if not self._pm.instruments:
             return ("C", "major")
         
-        # Get key estimate from pretty_midi
-        key_number = self._pm.estimate_key()
-        
-        # Convert to readable format
-        key_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-        if key_number < 12:
-            return (key_names[key_number], "major")
-        else:
-            return (key_names[key_number - 12], "minor")
+        try:
+            # Get key estimate from pretty_midi
+            key_number = self._pm.estimate_key()
+            
+            # Convert to readable format
+            key_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+            if key_number < 12:
+                return (key_names[key_number], "major")
+            else:
+                return (key_names[key_number - 12], "minor")
+                
+        except (ValueError, Exception):
+            return ("C", "major")
     
     def get_piano_roll_data(self, sampling_rate: int = 100) -> np.ndarray:
         """Get piano roll representation for analysis"""
-        return self._pm.get_piano_roll(fs=sampling_rate)
+        try:
+            return self._pm.get_piano_roll(fs=sampling_rate)
+        except Exception:
+            # Return empty piano roll
+            return np.zeros((128, 1))
     
     def get_chroma_vector(self, time: float) -> np.ndarray:
         """Get 12-dimensional chroma vector at specified time"""
@@ -614,4 +642,8 @@ class MidiDocument:
     
     def synthesize(self, sample_rate: int = 22050) -> np.ndarray:
         """Synthesize audio using pretty_midi (requires fluidsynth)"""
-        return self._pm.synthesize(fs=sample_rate)
+        try:
+            return self._pm.synthesize(fs=sample_rate)
+        except Exception as e:
+            print(f"Audio synthesis failed: {e}")
+            return np.array([])
