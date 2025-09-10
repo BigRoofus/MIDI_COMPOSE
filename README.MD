@@ -11,8 +11,8 @@ mico uses a real-time, continuous processing model that moves away from traditio
 
 **MusicDNA**
 
-MusicDNA is a radical new approach to analyzing and creating musical compositions. This tool analyzes and simplifies MIDI data into its core musical structure, 
-resulting in a detailed blueprint of the music that provides a clear and concise understanding of the its construction. MusicaDNA performs a bar-by-bar sliding analysis, going beyond a simple note list to identify the building blocks of a composition based on pitch set changes. MusicaDNA uses a Jaccard similarity metric to determine if a new section is musically different from the one before it. The analysis also pinpoints the main motif and calculates the note density, offering a concise, data-driven summary that's perfect for composers, analysts, and anyone looking to deconstruct music at a fundamental level. The resulting analysis can be saved as an external file (.musdna extension) and re-used again later as a transform.
+MusicDNA is a radical new approach to analyzing and creating musical compositions. This tool analyzes and reduces MIDI data into its core musical structure, 
+resulting in a detailed blueprint that provides a clear and concise understanding of the music's construction. MusicaDNA performs a bar-by-bar sliding analysis, going beyond a simple note list, to identify the building blocks of a composition based on pitch set changes, and a Jaccard similarity metric to determine if a new section is musically different from the one before it. The analysis also pinpoints the main motif and calculates the note density, offering a concise, data-driven summary that's perfect for composers, analysts, and anyone looking to deconstruct music at a fundamental level. The resulting analysis can be saved as an external file (.musdna extension, in JSON format) and re-used again later as a transform on other MIDI.
 <br><br>
 
 **Advanced Velocity Editor** 
