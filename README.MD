@@ -1,4 +1,5 @@
-mico, pronounced "mee-ko," short for MIDI_COMPOSE, is a MIDI sequencing and editing application designed for comprehensive musical data manipulation.
+mico, pronounced "mee-ko," short for MIDI_COMPOSE, 
+is a MIDI sequencing and editing application designed for comprehensive musical data manipulation.
 <br>
 <br>
 
