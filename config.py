@@ -21,8 +21,8 @@ class AppSettings:
     consonance_preference: float = 0  # -1.000 = dissonant, 0 = neutral, 1.000
     track_colors: list = None
 
-	# Color settings - from darkest to lighest
-	main_colors = ["#404040", "#606060", "#808080", "#A0A0A0", "#C0C0C0"]
+	# Color settings
+	main_colors = ["#404040", "#606060", "#808080", "#A0A0A0", "#C0C0C0"] # from darkest to lighest
     track_colors = ["#4A90E2", "#E94B3C", "#6AB04C", "#F79F1F"]
 
     def __post_init__(self):
