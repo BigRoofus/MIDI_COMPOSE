@@ -4,7 +4,7 @@ mico, pronounced "mee-ko," short for MIDI_COMPOSE, is a MIDI sequencing and edit
 
 **Standard Piano Roll Interface**
 
-The primary UI facilitates the same standard piano roll note editing as most modern DAWs, enabling independent modification of pitch, timing, duration, and velocity. Notes can be added, deleted, or adjusted by their start and end points. Any user familiar with a piano roll editor will be instantly at home.
+The primary UI facilitates the same standard piano roll note editing found in most modern notation software. Enabling independent modification of pitch, timing, duration, and velocity. Notes can be added, deleted, elongated or shortened. Any user familiar with a piano roll editor will be instantly at home.
 <br>
 <br>
 
