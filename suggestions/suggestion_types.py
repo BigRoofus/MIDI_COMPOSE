@@ -1,5 +1,5 @@
 """
-This file contains all music theory and music analysis functions
+This file contains all music theory and music analysis functions, that will be used by suggestion engine.py
 """
 from typing import List, Optional, Tuple, Dict
 from dataclasses import dataclass
