@@ -28,7 +28,5 @@ The primary UI facilitates the same standard piano roll note editing as most mod
 <br>
 <br>
 
-**pip**
-Use pip to install:
-
+**pip install**
 pip install PyQt6 numpy pretty_midi scipy matplotlib dataclasses-json
