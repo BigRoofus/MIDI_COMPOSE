@@ -20,6 +20,9 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+# Project root for resource paths
+PROJECT_ROOT = Path(__file__).parent
+
 def create_application():
     """Create and configure the Qt application"""
     from PyQt6.QtWidgets import QApplication
@@ -45,8 +48,13 @@ def create_application():
 def create_main_window():
     """Create and configure the main application window"""
     try:
-        from midi_editor import MidiEditorMainWindow
-        main_window = MidiEditorMainWindow()
+        from ui.app_window import MainWindow
+        from core.midi_data_model import MidiDocument
+        from config import AppSettings
+        
+        document = MidiDocument()
+        settings = AppSettings.load()
+        main_window = MainWindow(document, settings)
         return main_window
     except ImportError as e:
         logger.error(f"Failed to import main window: {e}")
