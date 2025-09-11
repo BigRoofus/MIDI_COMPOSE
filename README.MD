@@ -27,3 +27,8 @@ The Advanced Grid is a powerful visual tool for precise note placement. It can b
 The primary UI facilitates the same standard piano roll note editing as most modern DAWs, enabling users to independently modify pitch, timing, duration, and velocity. Notes can be added, deleted, or adjusted by their start and end points. Any user familiar with a piano roll editor will be instantly at home.
 <br>
 <br>
+
+**pip**
+Use pip to install:
+
+pip install PyQt6 numpy pretty_midi scipy matplotlib dataclasses-json

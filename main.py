@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 MIDI_COMPOSE Application Entry Point
-Fixed version with proper pretty_midi integration
+Enhanced version with improved dependency management and startup flow
 """
 import sys
 import os
@@ -18,6 +18,15 @@ logger = logging.getLogger(__name__)
 # Add current directory to path for module imports
 PROJECT_ROOT = Path(__file__).parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+def check_python_version():
+    """Ensure we're running on a compatible Python version"""
+    if sys.version_info < (3, 8):
+        print("❌ Python 3.8 or higher is required")
+        print(f"Current version: {sys.version}")
+        return False
+    logger.info(f"✅ Python {sys.version_info.major}.{sys.version_info.minor} compatible")
+    return True
 
 def install_missing_packages():
     """Attempt to install missing packages automatically"""
@@ -106,160 +115,3 @@ def check_dependencies():
         logger.error("❌ PyQt6 not available")
     
     return missing
-
-def create_gui_application():
-    """Create the GUI application"""
-    try:
-        from PyQt6.QtWidgets import QApplication
-        from PyQt6.QtCore import Qt
-        from PyQt6.QtGui import QIcon
-        
-        # Import our modules
-        from core.midi_data import MidiDocument
-        from config import AppSettings
-        from ui.main_window import MainWindow
-        
-        logger.info("Starting GUI application...")
-        
-        # Create QApplication
-        app = QApplication(sys.argv)
-        app.setStyle('Fusion')
-        
-        # Set application properties
-        app.setApplicationName("MIDI_COMPOSE")
-        app.setApplicationVersion("2.1.0")
-        app.setOrganizationName("MIDI_COMPOSE")
-        
-        # Create document and settings
-        document = MidiDocument()
-        settings = AppSettings.load()
-        
-        # Create main window
-        window = MainWindow(document, settings)
-        window.show()
-        
-        logger.info("✅ GUI application started successfully")
-        print("🎼 MIDI_COMPOSE GUI started successfully!")
-        print("🚀 All features available:")
-        print("   • Piano Roll Editor: ✅")
-        print("   • MIDI Import/Export: ✅") 
-        print("   • Musical Analysis: ✅")
-        print("   • Real-time Editing: ✅")
-        
-        return app.exec()
-        
-    except Exception as e:
-        logger.error(f"GUI application failed: {e}")
-        import traceback
-        traceback.print_exc()
-        return 1
-
-def create_console_application():
-    """Create console application with full functionality"""
-    try:
-        from core.midi_data import MidiDocument
-        from config import AppSettings
-        
-        logger.info("Starting console application...")
-        
-        print("🎼 MIDI_COMPOSE - Console Mode")
-        print("All core functionality available!")
-        
-        # Create test document
-        document = MidiDocument()
-        settings = AppSettings.load()
-        
-        # Add a test track
-        track = document.add_track()
-        track.name = "Piano"
-        track.program = 0
-        
-        # Add some test notes
-        from core.midi_data import MidiNote
-        
-        # Create a C major chord
-        chord_notes = [60, 64, 67]  # C, E, G
-        for pitch in chord_notes:
-            note = MidiNote(
-                start=0.0,
-                end=2.0,
-                pitch=pitch,
-                velocity=80
-            )
-            track.add_note(note)
-        
-        print(f"✅ Created document with {len(document.tracks)} track(s)")
-        print(f"✅ Added {len(track.notes)} notes to track")
-        print(f"✅ Tempo: {document.tempo_bpm:.1f} BPM")
-        
-        # Test analysis if available
-        try:
-            key_root, key_mode = document.estimate_key()
-            print(f"✅ Key analysis: {key_root} {key_mode}")
-        except Exception as e:
-            print(f"⚠️  Key analysis not available: {e}")
-        
-        print("\n🎵 Console mode ready - all MIDI functionality working!")
-        return 0
-        
-    except Exception as e:
-        logger.error(f"Console application failed: {e}")
-        import traceback
-        traceback.print_exc()
-        return 1
-
-def main():
-    """Main application entry point"""
-    args = sys.argv[1:]
-    
-    if '-h' in args or '--help' in args:
-        show_help()
-        return 0
-    
-    print("🎼 MIDI_COMPOSE - Starting up...")
-    
-    # Check if we should attempt auto-installation
-    auto_install = '--install' in args or '--no-install' not in args
-    
-    # Check dependencies
-    missing = check_dependencies()
-    
-    if missing:
-        print(f"❌ Missing required packages: {', '.join(missing)}")
-        
-        if auto_install:
-            print("🔧 Attempting automatic installation...")
-            if not install_missing_packages():
-                print("💡 You can also try: python main.py --install")
-                return 1
-        else:
-            print("\n📝 Please install missing packages:")
-            print(f"   pip install {' '.join(missing)}")
-            print("\nOr try: python main.py --install")
-            return 1
-    
-    print("✅ All required packages available!")
-    
-    # Determine run mode
-    force_console = '-c' in args or '--console' in args
-    
-    if force_console:
-        logger.info("Console mode requested")
-        return create_console_application()
-    else:
-        logger.info("Starting GUI mode")
-        return create_gui_application()
-
-if __name__ == "__main__":
-    try:
-        exit_code = main()
-        sys.exit(exit_code)
-    except KeyboardInterrupt:
-        logger.info("Application interrupted by user")
-        print("\n👋 Goodbye!")
-        sys.exit(0)
-    except Exception as e:
-        logger.error(f"Unexpected error: {e}")
-        import traceback
-        traceback.print_exc()
-        sys.exit(1)
