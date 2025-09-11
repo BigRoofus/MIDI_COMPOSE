@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# pip install command
+# pip install PyQt6 numpy pretty_midi scipy matplotlib dataclasses-json
+
 """
 MIDI_COMPOSE (mico) Application Entry Point
 """
