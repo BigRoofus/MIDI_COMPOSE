@@ -1,7 +1,3 @@
-"""
-Music theory, dissonance calculation, key analysis and other suggestion types to come.
-"""
-
 from typing import List, Optional, Tuple, Dict
 from dataclasses import dataclass
 from collections import deque, defaultdict
