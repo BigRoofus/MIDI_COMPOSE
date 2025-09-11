@@ -1,5 +1,5 @@
 """
-This file contains all music theory and functions
+This file contains all music theory and music analysis functions
 """
 from typing import List, Optional, Tuple, Dict
 from dataclasses import dataclass
