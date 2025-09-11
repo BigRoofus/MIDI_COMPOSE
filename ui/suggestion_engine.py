@@ -6,16 +6,8 @@ from typing import List, Optional, Tuple, Dict
 from dataclasses import dataclass
 from suggestion_types import MidiDocument, KeyAnalysisPoint, TonalityTransition, SlidingWindowKeyAnalyzer
 
-# The dataclasses for MidiNote, MidiTrack, and MidiDocument should be moved to suggestion_types.py
-# as they are fundamental data structures. The UI file will import them.
-# Similarly, SlidingWindowKeyAnalyzer should be imported, not defined here.
-
-# The UI file will primarily be used to initialize the analyzer and call its methods.
-# For example, here's a simplified view of how it might be structured.
-
-# (This is a conceptual example and not a complete, runnable file)
 def main_ui_function():
-    # 1. Load a MIDI document from user input
+    # 1. Load a MIDI data from user input
     midi_doc = MidiDocument(tracks=[]) # Placeholder
     
     # 2. Initialize the analyzer
