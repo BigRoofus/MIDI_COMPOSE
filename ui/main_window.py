@@ -11,7 +11,7 @@ except ImportError:
     class QWidget:
         def __init__(self): pass
 
-from core.midi_data import MidiDocument
+from core.midi_data_model import MidiDocument
 from config import AppSettings
 
 class MainWindow(QMainWindow):

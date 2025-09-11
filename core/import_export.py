@@ -1,6 +1,6 @@
 """MIDI file import/export functionality"""
 from typing import Optional
-from .midi_data import MidiDocument
+from .midi_data_model import MidiDocument
 
 class MidiImporter:
     @staticmethod
