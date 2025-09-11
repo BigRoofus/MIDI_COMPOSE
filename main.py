@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 MIDI_COMPOSE (mico) Application Entry Point
-Enhanced version with improved dependency management and startup flow
 """
 import sys
 import os
@@ -13,11 +12,8 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-logger = logging.getLogger(__name__)
 
-# Add current directory to path for module imports
-PROJECT_ROOT = Path(__file__).parent
-sys.path.insert(0, str(PROJECT_ROOT))
+logger = logging.getLogger(__name__)
 
 def create_application():
     """Create and configure the Qt application"""
