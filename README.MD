@@ -16,7 +16,7 @@ mico uses a real-time, continuous processing model that moves away from traditio
 
 **Advanced Velocity Editor**
 
-The Advanced Velocity Editor enables unprecedented command over a composition's dynamics. More than just offering fine-grained control over individual note dynamics, tools like the Dynamics Curve Tool (for three-point cubic Bezier curves), the Freehand Draw Tool (for freely drawing dynamic curves by hand), the Mathematical Formula Input Tool (for equation-based shaping), and the Classic Shapes Tool (triangle, oval, polygon, invert shape, and more); give complete command over any selection of notes' dynamic landscape. Want a mathematically precise 20-bar crescendo, the tools provide it. Want a mathematically correct
+The Advanced Velocity Editor enables unprecedented command over a composition's dynamics. More than just offering fine-grained control over individual note dynamics, tools like the Dynamics Curve Tool (for three-point cubic Bezier curves), the Freehand Draw Tool (for freely drawing dynamic curves by hand), the Mathematical Formula Input Tool (for equation based shaping), and the Classic Shapes Tool (triangle, oval, polygon, invert shape, and more); give complete command over any selection of notes' dynamic landscape. Want a mathematically precise 20-bar crescendo, the tools provide it. Want a mathematically correct
 $y(t) = 20 \cdot \sin(\pi t)$
 sine wave, the tools provide it. 
 <br>
