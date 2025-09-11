@@ -19,7 +19,7 @@ class AppSettings:
     # Analysis settings
     key_confidence_threshold: float = 0.65
     max_voices: int = 4
-    consonance_preference: float = 0  # -1.000 = dissonant, 0 = neutral, 1.000
+    consonance_preference: float = 0  # -1.000 = max dissonance, 0 = neutral, 1.000 = max consonance
 
 	# Color settings
     track_colors: list = None
