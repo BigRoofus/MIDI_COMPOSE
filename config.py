@@ -5,10 +5,12 @@ import os
 
 @dataclass
 class AppSettings:
+
     # Audio settings
-    sample_rate: int = 48000
+    sample_rate: float = 48000
+	bit_depth: int = 24
     buffer_size: int = 512
-    audio_device: str = "default"
+    audio_device: str = "system"
     
     # MIDI settings
     default_velocity: int = 90
@@ -19,10 +21,10 @@ class AppSettings:
     key_confidence_threshold: float = 0.65
     max_voices: int = 4
     consonance_preference: float = 0  # -1.000 = dissonant, 0 = neutral, 1.000
-    track_colors: list = None
 
 	# Color settings
-	main_colors = ["#404040", "#606060", "#808080", "#A0A0A0", "#C0C0C0"] # from darkest to lighest
+    track_colors: list = None
+	main_colors = ["#404040", "#606060", "#808080", "#A0A0A0", "#C0C0C0"] # in order from darkest to lighest
     track_colors = ["#4A90E2", "#E94B3C", "#6AB04C", "#F79F1F"]
 
     def __post_init__(self):
