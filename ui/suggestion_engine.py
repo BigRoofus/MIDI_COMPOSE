@@ -1,6 +1,5 @@
 """
-Combined Python file for music theory constants, dissonance calculation, 
-and key analysis.
+Music theory, dissonance calculation, key analysis and other suggestion types to come.
 """
 
 from typing import List, Optional, Tuple, Dict
@@ -8,8 +7,6 @@ from dataclasses import dataclass
 from collections import deque, defaultdict
 import numpy as np
 
-# --- 1. Music Theory Constants ---
-# ---------------------------------
 KEY_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
 DISSONANCE_RANKING = {
@@ -22,8 +19,6 @@ DISSONANCE_RANKING = {
 MAJOR_KEY_PROFILE = [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88]
 MINOR_KEY_PROFILE = [6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17]
 
-# --- 2. Data Classes and Helper Functions ---
-# --------------------------------------------
 @dataclass
 class MidiNote:
     pitch: int
@@ -48,8 +43,6 @@ class MidiDocument:
 def get_key_name(root: int, mode: str) -> str:
     return f"{KEY_NAMES[root]} {mode.capitalize()}"
 
-# --- 3. Dissonance Calculator Class ---
-# --------------------------------------
 class DissonanceCalculator:
     def __init__(self, max_voices: int = 4):
         self.max_voices = max_voices
@@ -65,8 +58,6 @@ class DissonanceCalculator:
     def get_key_contextual_dissonance(self, note: int, key_root: int, mode: str, interval_from_chord_root: int) -> float:
         pass
 
-# --- 4. Key Analyzer Classes ---
-# -------------------------------
 @dataclass
 class KeyAnalysisPoint:
     time: float
