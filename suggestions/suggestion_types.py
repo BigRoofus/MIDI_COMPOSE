@@ -1,5 +1,6 @@
 """
-This file contains all music theory and music analysis functions, that will be used by suggestion engine.py
+This file contains all music theory, music analysis functions, and suggestion profiles.
+/ui/suggestion_engine.py will call this file for logic.
 """
 from typing import List, Optional, Tuple, Dict
 from dataclasses import dataclass
