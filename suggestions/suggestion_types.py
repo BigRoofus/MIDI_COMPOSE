@@ -1,3 +1,6 @@
+"""
+This file contains all music theory and finctions
+"""
 from typing import List, Optional, Tuple, Dict
 from dataclasses import dataclass
 from collections import deque, defaultdict
