@@ -18,13 +18,18 @@ class AppSettings:
     # Analysis settings
     key_confidence_threshold: float = 0.65
     max_voices: int = 4
-    consonance_preference: int = 0  # -1=dissonant, 0=neutral, 1=consonant
+    consonance_preference: float = 0  # -1 = dissonant, 0 = neutral, 1 = consonant. 0.7687, or -0.5 can be chosen
     track_colors: list = None
-    
+
+	# Color settings - from darkest to lighest
+	main_colors = ["#404040", "#606060", "#808080", "#A0A0A0", "#C0C0C0"]
+    track_colors = ["#4A90E2", "#E94B3C", "#6AB04C", "#F79F1F"]
+
     def __post_init__(self):
         if self.track_colors is None:
-            self.track_colors = ["#4A90E2", "#E94B3C", "#6AB04C", "#F79F1F"]
-    
+            self.track_colors = track_colors
+			
+
     @classmethod
     def load(cls, config_path: str = "config.json") -> 'AppSettings':
         """Load settings from file"""
