@@ -1,5 +1,5 @@
-from dataclasses import dataclass
-from typing import Dict, Any
+from dataclasses import dataclass, field
+from typing import Dict, Any, List
 import json
 import os
 
@@ -7,7 +7,7 @@ import os
 class AppSettings:
     # Audio settings
     sample_rate: float = 48000
-	bit_depth: int = 24
+    bit_depth: int = 24
     buffer_size: int = 512
     audio_device: str = "system"
     
@@ -21,15 +21,10 @@ class AppSettings:
     max_voices: int = 4
     consonance_preference: float = 0  # -1.000 = max dissonance, 0 = neutral, 1.000 = max consonance
 
-	# Color settings
-    track_colors: list = None
-	main_colors = ["#404040", "#606060", "#808080", "#A0A0A0", "#C0C0C0"] # in order from darkest to lighest
-    track_colors = ["#4A90E2", "#E94B3C", "#6AB04C", "#F79F1F"]
-
-    def __post_init__(self):
-        if self.track_colors is None:
-            self.track_colors = track_colors
-			
+    # Color settings
+    main_colors: List[str] = field(default_factory=lambda: ["#404040", "#606060", "#808080", "#A0A0A0", "#C0C0C0"])
+    track_colors: List[str] = field(default_factory=lambda: ["#4A90E2", "#E94B3C", "#6AB04C", "#F79F1F"])
+            
     @classmethod
     def load(cls, config_path: str = "config.json") -> 'AppSettings':
         """Load settings from file"""
