@@ -69,5 +69,3 @@ class MidiPlayback:
     def set_position(self, ticks: int):
         """Set playback position (not precise yet)"""
         self.current_position = ticks
-
-# PrettyMIDI stores times in seconds, so you'd map ticks to seconds if needed
