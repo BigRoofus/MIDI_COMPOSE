@@ -1,241 +1,281 @@
 #!/usr/bin/env python3
 """
-MICO - MIDI Compose Application Entry Point
-Simple dependency checking and application startup
+MIDI_COMPOSE (mico) Application Entry Point
+Enhanced version with improved dependency management and startup flow
 """
 import sys
 import os
 import logging
-import subprocess
 from pathlib import Path
 
-# Setup basic logging
-logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(message)s')
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
+# Add current directory to path for module imports
 PROJECT_ROOT = Path(__file__).parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 def check_python_version():
-    """Check Python version compatibility"""
+    """Ensure we're running on a compatible Python version"""
     if sys.version_info < (3, 8):
-        print(f"Python 3.8+ required. Current: {sys.version_info.major}.{sys.version_info.minor}")
+        print("❌ Python 3.8 or higher is required")
+        print(f"Current version: {sys.version}")
         return False
+    logger.info(f"✅ Python {sys.version_info.major}.{sys.version_info.minor} compatible")
+    return True
+
+def install_missing_packages():
+    """Attempt to install missing packages automatically"""
+    import subprocess
+    
+    packages_to_install = []
+    
+    # Check and install pretty_midi
+    try:
+        import pretty_midi
+        logger.info("✅ pretty_midi already available")
+    except ImportError:
+        packages_to_install.append("pretty_midi")
+        logger.info("📦 pretty_midi needs to be installed")
+    
+    # Check and install PyQt6
+    try:
+        import PyQt6.QtWidgets
+        logger.info("✅ PyQt6 already available")
+    except ImportError:
+        packages_to_install.append("PyQt6")
+        logger.info("📦 PyQt6 needs to be installed")
+    
+    # Check and install numpy
+    try:
+        import numpy
+        logger.info("✅ numpy already available")
+    except ImportError:
+        packages_to_install.append("numpy")
+        logger.info("📦 numpy needs to be installed")
+    
+    # Check and install scipy
+    try:
+        import scipy
+        logger.info("✅ scipy already available")
+    except ImportError:
+        packages_to_install.append("scipy")
+        logger.info("📦 scipy needs to be installed")
+    
+    # Check and install matplotlib
+    try:
+        import matplotlib
+        logger.info("✅ matplotlib already available")
+    except ImportError:
+        packages_to_install.append("matplotlib")
+        logger.info("📦 matplotlib needs to be installed")
+    
+    if packages_to_install:
+        print(f"🔧 Installing missing packages: {', '.join(packages_to_install)}")
+        print("This may take a moment...")
+        
+        try:
+            # Try to install the packages
+            subprocess.check_call([
+                sys.executable, "-m", "pip", "install", "--user"
+            ] + packages_to_install)
+            
+            print("✅ Installation completed successfully!")
+            print("🔄 Restarting application with new packages...")
+            
+            # Restart the application
+            os.execv(sys.executable, ['python'] + sys.argv)
+            
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Failed to install packages automatically: {e}")
+            print("\n📝 Please install manually:")
+            print(f"   pip install {' '.join(packages_to_install)}")
+            return False
+        except Exception as e:
+            print(f"❌ Installation error: {e}")
+            print("\n📝 Please install manually:")
+            print(f"   pip install {' '.join(packages_to_install)}")
+            return False
+    
     return True
 
 def check_dependencies():
-    """Check for required packages"""
-    required = ['PyQt6', 'numpy', 'pretty_midi', 'scipy', 'matplotlib']
+    """Check that all required dependencies are available"""
     missing = []
     
-    for pkg in required:
-        try:
-            if pkg == 'PyQt6':
-                import PyQt6.QtWidgets
-            else:
-                __import__(pkg)
-            logger.info(f"✅ {pkg}")
-        except ImportError:
-            missing.append(pkg)
-            logger.warning(f"❌ {pkg} missing")
+    try:
+        import pretty_midi
+        logger.info("✅ pretty_midi loaded successfully")
+    except ImportError:
+        missing.append("pretty_midi")
+        logger.error("❌ pretty_midi not available")
+    
+    try:
+        import numpy
+        logger.info("✅ numpy loaded successfully")
+    except ImportError:
+        missing.append("numpy")
+        logger.error("❌ numpy not available")
+    
+    try:
+        import PyQt6.QtWidgets
+        import PyQt6.QtCore
+        import PyQt6.QtGui
+        logger.info("✅ PyQt6 loaded successfully")
+    except ImportError:
+        missing.append("PyQt6")
+        logger.error("❌ PyQt6 not available")
+    
+    try:
+        import scipy
+        logger.info("✅ scipy loaded successfully")
+    except ImportError:
+        missing.append("scipy")
+        logger.error("❌ scipy not available")
+    
+    try:
+        import matplotlib
+        logger.info("✅ matplotlib loaded successfully")
+    except ImportError:
+        missing.append("matplotlib")
+        logger.error("❌ matplotlib not available")
     
     return missing
 
-def install_packages(packages):
-    """Auto-install missing packages"""
-    print(f"Installing: {', '.join(packages)}")
-    try:
-        subprocess.check_call([
-            sys.executable, "-m", "pip", "install", "--user"
-        ] + packages)
-        print("✅ Installation complete")
-        # Restart application
-        os.execv(sys.executable, ['python'] + sys.argv)
-    except subprocess.CalledProcessError as e:
-        print(f"❌ Install failed: {e}")
-        print(f"Manual install: pip install {' '.join(packages)}")
-        return False
-    return True
+def create_application():
+    """Create and configure the Qt application"""
+    from PyQt6.QtWidgets import QApplication
+    from PyQt6.QtCore import Qt
+    from PyQt6.QtGui import QIcon
+    
+    # Enable high DPI support
+    QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling, True)
+    QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps, True)
+    
+    app = QApplication(sys.argv)
+    app.setApplicationName("mico")
+    app.setApplicationVersion("1.0.0")
+    app.setOrganizationName("MIDI_COMPOSE")
+    
+    # Set application icon if available
+    icon_path = PROJECT_ROOT / "resources" / "icon.png"
+    if icon_path.exists():
+        app.setWindowIcon(QIcon(str(icon_path)))
+    
+    return app
 
-class MidiEditor:
-    """Main MICO application window"""
-    def __init__(self):
-        from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, 
-                                   QHBoxLayout, QPushButton, QFileDialog,
-                                   QMenuBar, QStatusBar, QSplitter)
-        from PyQt6.QtCore import Qt
-        from PyQt6.QtGui import QAction
+def create_main_window():
+    """Create and configure the main application window"""
+    try:
+        from midi_editor import MidiEditorMainWindow
+        main_window = MidiEditorMainWindow()
+        return main_window
+    except ImportError as e:
+        logger.error(f"Failed to import main window: {e}")
+        # Fallback to basic window for development
+        from PyQt6.QtWidgets import QMainWindow, QLabel, QVBoxLayout, QWidget
         
-        self.window = QMainWindow()
-        self.window.setWindowTitle("MICO - MIDI Compose")
-        self.window.setGeometry(100, 100, 1200, 800)
+        class FallbackWindow(QMainWindow):
+            def __init__(self):
+                super().__init__()
+                self.setWindowTitle("mico - MIDI Compose")
+                self.setGeometry(100, 100, 1200, 800)
+                
+                central_widget = QWidget()
+                layout = QVBoxLayout()
+                
+                label = QLabel("mico MIDI Sequencer\n\nDevelopment Mode\nMain components not yet implemented")
+                label.setStyleSheet("font-size: 18px; text-align: center; padding: 50px;")
+                
+                layout.addWidget(label)
+                central_widget.setLayout(layout)
+                self.setCentralWidget(central_widget)
         
-        # Create menu bar
-        self.setup_menu()
-        
-        # Main layout with splitter
-        central_widget = QWidget()
-        self.window.setCentralWidget(central_widget)
-        
-        main_layout = QVBoxLayout(central_widget)
-        splitter = QSplitter(Qt.Orientation.Horizontal)
-        
-        # Piano roll area (left side - main area)
-        self.piano_roll = self.create_piano_roll()
-        splitter.addWidget(self.piano_roll)
-        
-        # Velocity editor (right side)
-        self.velocity_editor = self.create_velocity_editor()
-        splitter.addWidget(self.velocity_editor)
-        
-        # Set splitter proportions (80% piano roll, 20% velocity editor)
-        splitter.setSizes([800, 200])
-        
-        main_layout.addWidget(splitter)
-        
-        # Status bar
-        self.window.setStatusBar(QStatusBar())
-        self.window.statusBar().showMessage("Ready")
-        
-        # Initialize MIDI data
-        self.current_midi = None
-        self.suggestions_enabled = True
-    
-    def setup_menu(self):
-        """Create application menu"""
-        from PyQt6.QtGui import QAction
-        
-        menubar = self.window.menuBar()
-        
-        # File menu
-        file_menu = menubar.addMenu('File')
-        
-        open_action = QAction('Open MIDI...', self.window)
-        open_action.triggered.connect(self.open_midi_file)
-        file_menu.addAction(open_action)
-        
-        save_action = QAction('Save', self.window)
-        save_action.triggered.connect(self.save_midi_file)
-        file_menu.addAction(save_action)
-        
-        # Tools menu
-        tools_menu = menubar.addMenu('Tools')
-        
-        suggestions_action = QAction('Toggle Suggestions', self.window)
-        suggestions_action.setCheckable(True)
-        suggestions_action.setChecked(True)
-        suggestions_action.triggered.connect(self.toggle_suggestions)
-        tools_menu.addAction(suggestions_action)
-    
-    def create_piano_roll(self):
-        """Create the piano roll widget"""
-        from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel
-        
-        widget = QWidget()
-        layout = QVBoxLayout(widget)
-        
-        # Placeholder for now
-        label = QLabel("Piano Roll Area")
-        label.setStyleSheet("border: 2px dashed #ccc; padding: 20px;")
-        layout.addWidget(label)
-        
-        return widget
-    
-    def create_velocity_editor(self):
-        """Create the velocity editor panel"""
-        from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel
-        
-        widget = QWidget()
-        layout = QVBoxLayout(widget)
-        
-        # Placeholder for now
-        label = QLabel("Velocity Editor")
-        label.setStyleSheet("border: 2px dashed #ccc; padding: 20px;")
-        layout.addWidget(label)
-        
-        return widget
-    
-    def open_midi_file(self):
-        """Open MIDI file dialog"""
-        from PyQt6.QtWidgets import QFileDialog
-        
-        filename, _ = QFileDialog.getOpenFileName(
-            self.window, "Open MIDI File", "", "MIDI Files (*.mid *.midi)"
-        )
-        if filename:
-            try:
-                import pretty_midi
-                self.current_midi = pretty_midi.PrettyMIDI(filename)
-                self.window.statusBar().showMessage(f"Loaded: {filename}")
-                logger.info(f"Loaded MIDI file: {filename}")
-            except Exception as e:
-                self.window.statusBar().showMessage(f"Error loading file: {e}")
-                logger.error(f"Failed to load MIDI: {e}")
-    
-    def save_midi_file(self):
-        """Save current MIDI data"""
-        if not self.current_midi:
-            self.window.statusBar().showMessage("No MIDI data to save")
+        return FallbackWindow()
+
+def setup_exception_handling():
+    """Setup global exception handling"""
+    def handle_exception(exc_type, exc_value, exc_traceback):
+        if issubclass(exc_type, KeyboardInterrupt):
+            sys.__excepthook__(exc_type, exc_value, exc_traceback)
             return
         
-        from PyQt6.QtWidgets import QFileDialog
+        logger.critical("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
         
-        filename, _ = QFileDialog.getSaveFileName(
-            self.window, "Save MIDI File", "", "MIDI Files (*.mid)"
-        )
-        if filename:
-            try:
-                self.current_midi.write(filename)
-                self.window.statusBar().showMessage(f"Saved: {filename}")
-                logger.info(f"Saved MIDI file: {filename}")
-            except Exception as e:
-                self.window.statusBar().showMessage(f"Error saving file: {e}")
-                logger.error(f"Failed to save MIDI: {e}")
+        # Show error dialog if Qt is available
+        try:
+            from PyQt6.QtWidgets import QMessageBox, QApplication
+            if QApplication.instance():
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Icon.Critical)
+                msg.setWindowTitle("Application Error")
+                msg.setText(f"An unexpected error occurred:\n\n{exc_type.__name__}: {exc_value}")
+                msg.setDetailedText(f"Exception traceback:\n{''.join(traceback.format_tb(exc_traceback))}")
+                msg.exec()
+        except ImportError:
+            pass
     
-    def toggle_suggestions(self, checked):
-        """Toggle real-time suggestions on/off"""
-        self.suggestions_enabled = checked
-        status = "enabled" if checked else "disabled"
-        self.window.statusBar().showMessage(f"Suggestions {status}")
-        logger.info(f"Suggestions {status}")
-    
-    def show(self):
-        """Show the main window"""
-        self.window.show()
+    import traceback
+    sys.excepthook = handle_exception
 
-def start_application():
-    """Initialize and start MICO"""
+def main():
+    """Main application entry point"""
+    print("🎵 Starting mico - MIDI Compose")
+    print("=" * 40)
+    
+    # Check Python version
+    if not check_python_version():
+        sys.exit(1)
+    
+    # Install missing packages if needed
+    if not install_missing_packages():
+        print("\n❌ Cannot proceed without required packages")
+        sys.exit(1)
+    
+    # Final dependency check
+    missing = check_dependencies()
+    if missing:
+        print(f"\n❌ Missing dependencies: {', '.join(missing)}")
+        print("Please install them manually and try again.")
+        sys.exit(1)
+    
+    # Setup exception handling
+    setup_exception_handling()
+    
     try:
-        from PyQt6.QtWidgets import QApplication
+        # Create Qt application
+        logger.info("Creating Qt application...")
+        app = create_application()
         
-        app = QApplication(sys.argv)
-        app.setApplicationName("MICO")
-        app.setApplicationVersion("1.0")
+        # Create main window
+        logger.info("Creating main window...")
+        main_window = create_main_window()
         
-        editor = MidiEditor()
-        editor.show()
+        # Show main window
+        main_window.show()
         
-        logger.info("🎵 MICO started successfully")
+        # Center window on screen
+        screen = app.primaryScreen().availableGeometry()
+        window_geometry = main_window.geometry()
+        x = (screen.width() - window_geometry.width()) // 2
+        y = (screen.height() - window_geometry.height()) // 2
+        main_window.move(x, y)
+        
+        logger.info("✅ Application started successfully")
+        print("🚀 mico is ready!")
+        
+        # Start the event loop
         return app.exec()
         
     except Exception as e:
-        logger.error(f"Application startup error: {e}")
+        logger.error(f"Failed to start application: {e}")
+        print(f"❌ Startup failed: {e}")
         return 1
-
-def main():
-    """Main entry point"""
-    print("🎵 MICO - MIDI Compose")
-    
-    if not check_python_version():
-        return 1
-    
-    missing = check_dependencies()
-    if missing:
-        print("\n📦 Missing dependencies detected")
-        install_packages(missing)
-        return 1
-    
-    return start_application()
 
 if __name__ == "__main__":
-    sys.exit(main())
+    exit_code = main()
+    sys.exit(exit_code)
