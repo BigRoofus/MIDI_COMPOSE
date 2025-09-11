@@ -1,5 +1,5 @@
 """
-Suggestion Engine UI
+Suggestion UI
 """
 
 from typing import List, Optional, Tuple, Dict

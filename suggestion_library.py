@@ -2,6 +2,7 @@
 This file contains all music theory, music analysis functions, and suggestion profiles.
 /ui/suggest.py will call this file for logic.
 """
+
 from typing import List, Optional, Tuple, Dict
 from dataclasses import dataclass
 from collections import deque, defaultdict

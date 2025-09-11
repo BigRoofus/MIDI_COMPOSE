@@ -1,4 +1,5 @@
 """Main application window"""
+
 try:
     from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget
     from PyQt6.QtCore import Qt

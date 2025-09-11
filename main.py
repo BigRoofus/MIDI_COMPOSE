@@ -6,6 +6,7 @@
 """
 MIDI_COMPOSE (mico) Application Entry Point
 """
+
 import sys
 import os
 import logging

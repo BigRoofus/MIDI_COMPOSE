@@ -1,4 +1,5 @@
 """Main application controller"""
+
 from core.midi_data_model import MidiDocument
 from config import AppSettings
 from analysis import KeyAnalyzer, DissonanceCalculator
