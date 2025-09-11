@@ -19,10 +19,6 @@ class AppSettings:
     key_confidence_threshold: float = 0.65
     max_voices: int = 4
     consonance_preference: int = 0  # -1=dissonant, 0=neutral, 1=consonant
-    
-    # UI settings
-    theme: str = "dark"
-    piano_roll_height: int = 600
     track_colors: list = None
     
     def __post_init__(self):
