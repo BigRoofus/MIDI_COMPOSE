@@ -1,117 +1,99 @@
 #!/usr/bin/env python3
 """
-MIDI_COMPOSE Application Entry Point
-Enhanced version with improved dependency management and startup flow
+MICO - MIDI Compose Application Entry Point
+Simple dependency checking and application startup
 """
 import sys
 import os
 import logging
+import subprocess
 from pathlib import Path
 
-# Setup logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+# Setup basic logging
+logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# Add current directory to path for module imports
 PROJECT_ROOT = Path(__file__).parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 def check_python_version():
-    """Ensure we're running on a compatible Python version"""
+    """Check Python version compatibility"""
     if sys.version_info < (3, 8):
-        print("❌ Python 3.8 or higher is required")
-        print(f"Current version: {sys.version}")
+        print(f"Python 3.8+ required. Current: {sys.version_info.major}.{sys.version_info.minor}")
         return False
-    logger.info(f"✅ Python {sys.version_info.major}.{sys.version_info.minor} compatible")
-    return True
-
-def install_missing_packages():
-    """Attempt to install missing packages automatically"""
-    import subprocess
-    
-    packages_to_install = []
-    
-    # Check and install pretty_midi
-    try:
-        import pretty_midi
-        logger.info("✅ pretty_midi already available")
-    except ImportError:
-        packages_to_install.append("pretty_midi")
-        logger.info("📦 pretty_midi needs to be installed")
-    
-    # Check and install PyQt6
-    try:
-        import PyQt6.QtWidgets
-        logger.info("✅ PyQt6 already available")
-    except ImportError:
-        packages_to_install.append("PyQt6")
-        logger.info("📦 PyQt6 needs to be installed")
-    
-    # Check and install numpy (comes with pretty_midi but let's be explicit)
-    try:
-        import numpy
-        logger.info("✅ numpy already available")
-    except ImportError:
-        packages_to_install.append("numpy")
-        logger.info("📦 numpy needs to be installed")
-    
-    if packages_to_install:
-        print(f"🔧 Installing missing packages: {', '.join(packages_to_install)}")
-        print("This may take a moment...")
-        
-        try:
-            # Try to install the packages
-            subprocess.check_call([
-                sys.executable, "-m", "pip", "install", "--user"
-            ] + packages_to_install)
-            
-            print("✅ Installation completed successfully!")
-            print("🔄 Restarting application with new packages...")
-            
-            # Restart the application
-            os.execv(sys.executable, ['python'] + sys.argv)
-            
-        except subprocess.CalledProcessError as e:
-            print(f"❌ Failed to install packages automatically: {e}")
-            print("\n📝 Please install manually:")
-            print(f"   pip install {' '.join(packages_to_install)}")
-            return False
-        except Exception as e:
-            print(f"❌ Installation error: {e}")
-            print("\n📝 Please install manually:")
-            print(f"   pip install {' '.join(packages_to_install)}")
-            return False
-    
     return True
 
 def check_dependencies():
-    """Check that all required dependencies are available"""
+    """Check for required packages"""
+    required = ['PyQt6', 'numpy', 'pretty_midi', 'scipy', 'matplotlib']
     missing = []
     
-    try:
-        import pretty_midi
-        logger.info("✅ pretty_midi loaded successfully")
-    except ImportError:
-        missing.append("pretty_midi")
-        logger.error("❌ pretty_midi not available")
-    
-    try:
-        import numpy
-        logger.info("✅ numpy loaded successfully")
-    except ImportError:
-        missing.append("numpy")
-        logger.error("❌ numpy not available")
-    
-    try:
-        import PyQt6.QtWidgets
-        import PyQt6.QtCore
-        import PyQt6.QtGui
-        logger.info("✅ PyQt6 loaded successfully")
-    except ImportError:
-        missing.append("PyQt6")
-        logger.error("❌ PyQt6 not available")
+    for pkg in required:
+        try:
+            if pkg == 'PyQt6':
+                import PyQt6.QtWidgets
+            else:
+                __import__(pkg)
+            logger.info(f"✅ {pkg}")
+        except ImportError:
+            missing.append(pkg)
+            logger.warning(f"❌ {pkg} missing")
     
     return missing
+
+def install_packages(packages):
+    """Auto-install missing packages"""
+    print(f"Installing: {', '.join(packages)}")
+    try:
+        subprocess.check_call([
+            sys.executable, "-m", "pip", "install", "--user"
+        ] + packages)
+        print("✅ Installation complete")
+        # Restart application
+        os.execv(sys.executable, ['python'] + sys.argv)
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Install failed: {e}")
+        print(f"Manual install: pip install {' '.join(packages)}")
+        return False
+    return True
+
+def start_application():
+    """Initialize and start MICO"""
+    try:
+        from midi_editor import MidiEditor
+        from PyQt6.QtWidgets import QApplication
+        
+        app = QApplication(sys.argv)
+        app.setApplicationName("MICO")
+        app.setApplicationVersion("1.0")
+        
+        editor = MidiEditor()
+        editor.show()
+        
+        logger.info("🎵 MICO started successfully")
+        return app.exec()
+        
+    except ImportError as e:
+        logger.error(f"Failed to import application modules: {e}")
+        return 1
+    except Exception as e:
+        logger.error(f"Application startup error: {e}")
+        return 1
+
+def main():
+    """Main entry point"""
+    print("🎵 MICO - MIDI Compose")
+    
+    if not check_python_version():
+        return 1
+    
+    missing = check_dependencies()
+    if missing:
+        print("\n📦 Missing dependencies detected")
+        install_packages(missing)
+        return 1
+    
+    return start_application()
+
+if __name__ == "__main__":
+    sys.exit(main())
