@@ -5,7 +5,6 @@ import os
 
 @dataclass
 class AppSettings:
-
     # Audio settings
     sample_rate: float = 48000
 	bit_depth: int = 24
@@ -31,7 +30,6 @@ class AppSettings:
         if self.track_colors is None:
             self.track_colors = track_colors
 			
-
     @classmethod
     def load(cls, config_path: str = "config.json") -> 'AppSettings':
         """Load settings from file"""
