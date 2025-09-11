@@ -11,9 +11,6 @@ The primary UI facilitates the same standard piano roll note editing as most mod
 **Real-Time Processing Architecture**
 
 mico uses a real-time, continuous processing model that moves away from traditional, menu-driven workflows. All features, including analysis, transformations, and generative functions, run in the background as dynamic filters that provide real-time suggestions and modifications to the MIDI data. This creates a WYSIWYG environment with immediate visual and sonic feedback, allowing users to decide whether or not to apply computational suggestions non-destructively.
-
-
-This creates a WYSIWYG environment and a live feedback loop, giving immediate visual and sonic feedback, allowing users to decide wheter or not to apply the computational suggestions to the score in a non-destructive manner.
 <br>
 <br>
 
