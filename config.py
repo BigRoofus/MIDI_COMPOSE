@@ -3,6 +3,19 @@ from typing import Dict, Any, List
 import json
 import os
 
+# Music Theory Constants
+KEY_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+FLAT_NAMES = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+
+# Key profiles for analysis (Krumhansl-Schmuckler)
+MAJOR_KEY_PROFILE = [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88]
+MINOR_KEY_PROFILE = [6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17]
+
+# MIDI Constants
+MIDDLE_C = 60
+MIN_MIDI_NOTE = 0
+MAX_MIDI_NOTE = 127
+
 @dataclass
 class AppSettings:
     # Audio settings
