@@ -18,7 +18,7 @@ sine wave? You got it.
 
 **Advanced Grid System** 
 
-The Advanced Grid is a powerful visual tool for precise note placement. It can be configured to any time signature or meter—standard, complex, odd, or mixed—independently of the MIDI file's own settings. You can freely adjust all of its settings, including the tempo, without affecting the original MIDI file's structure or playback.
+The Advanced Grid is a visual tool for precise note placement, adaptable to any time signature—standard, complex, odd, or mixed—and any BPM, while never altering the MIDI file’s original time signatures.
 <br>
 <br>
 
