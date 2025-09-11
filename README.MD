@@ -4,7 +4,7 @@ mico, pronounced "mee-ko," short for MIDI_COMPOSE, is a MIDI sequencing and edit
 
 **Real-Time Processing Architecture**
 
-mico uses a real-time, continuous processing model that moves away from traditional, menu-driven workflows. All features, including analysis, transformations, and generative functions, run in the background as dynamic filters that provide real-time suggestions and modifications to the MIDI data. This creates a WYSIWYG environment and a live feedback loop, giving users immediate visual feedback and allowing them to instantly decide whether to apply computational results to the score.
+mico uses a real-time, continuous processing model that moves away from traditional, menu-driven workflows. All features, including analysis, transformations, and generative functions, run in the background as dynamic filters that provide real-time suggestions and modifications to the MIDI data. This creates a WYSIWYG environment and a live feedback loop, giving users immediate visual and sonic feedback and allowing them to instantly decide whether to apply computational results to the score.
 <br>
 <br>
 
