@@ -55,13 +55,13 @@ def create_main_window():
         class FallbackWindow(QMainWindow):
             def __init__(self):
                 super().__init__()
-                self.setWindowTitle("mico - MIDI Compose")
+                self.setWindowTitle("mico")
                 self.setGeometry(100, 100, 1200, 800)
                 
                 central_widget = QWidget()
                 layout = QVBoxLayout()
                 
-                label = QLabel("mico MIDI Sequencer\n\nDevelopment Mode\nMain components not yet implemented")
+                label = QLabel("mico\n\nDevelopment Mode\nMain components not yet implemented")
                 label.setStyleSheet("font-size: 18px; text-align: center; padding: 50px;")
                 
                 layout.addWidget(label)
@@ -97,24 +97,8 @@ def setup_exception_handling():
 
 def main():
     """Main application entry point"""
-    print("🎵 Starting mico - MIDI Compose")
+    print("mico is starting up...")
     print("=" * 40)
-    
-    # Check Python version
-    if not check_python_version():
-        sys.exit(1)
-    
-    # Install missing packages if needed
-    if not install_missing_packages():
-        print("\n❌ Cannot proceed without required packages")
-        sys.exit(1)
-    
-    # Final dependency check
-    missing = check_dependencies()
-    if missing:
-        print(f"\n❌ Missing dependencies: {', '.join(missing)}")
-        print("Please install them manually and try again.")
-        sys.exit(1)
     
     # Setup exception handling
     setup_exception_handling()
