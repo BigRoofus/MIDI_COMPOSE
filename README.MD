@@ -2,6 +2,12 @@ mico, pronounced "mee-ko," short for MIDI_COMPOSE, is a MIDI sequencing and edit
 <br>
 <br>
 
+**Standard Piano Roll Interface**
+
+The primary UI facilitates the same standard piano roll note editing as most modern DAWs, enabling the user to independently modify pitch, timing, duration, and velocity. Notes can be added, deleted, or adjusted by their start and end points. Any user familiar with a piano roll editor will be instantly at home.
+<br>
+<br>
+
 **Real-Time Processing Architecture**
 
 mico uses a real-time, continuous processing model that moves away from traditional, menu-driven workflows. All features, including analysis, transformations, and generative functions, run in the background as dynamic filters that provide real-time suggestions and modifications to the MIDI data. This creates a WYSIWYG environment and a live feedback loop, giving the user immediate visual and sonic feedback and allowing them to instantly decide whether to apply computational suggestions to the score.
@@ -22,12 +28,6 @@ The Advanced Grid is a visual tool for precise note placement, switchable to any
 <br>
 <br>
 
-**Standard Piano Roll Interface**
-
-The primary UI facilitates the same standard piano roll note editing as most modern DAWs, enabling the user to independently modify pitch, timing, duration, and velocity. Notes can be added, deleted, or adjusted by their start and end points. Any user familiar with a piano roll editor will be instantly at home.
-<br>
-<br>
-
-**pip install**
+**pip CLI install command**
 
 pip install PyQt6 numpy pretty_midi mido scipy matplotlib dataclasses-json simpleaudio
