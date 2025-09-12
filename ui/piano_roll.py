@@ -1,6 +1,6 @@
 import sys
 import os
-from typing import Optional, Tuple, Dict
+from typing import Optional, Tuple, Dict, Any
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QGraphicsView, QGraphicsScene, QGraphicsRectItem, QPushButton, QLabel,
@@ -8,18 +8,20 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QBrush, QPen, QColor, QFont, QPainter, QKeySequence
 from PyQt6.QtCore import Qt, QRectF, QPointF, pyqtSignal
+import json
 
 # Core MIDI and config imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.midi_data_model import MidiDocument, MidiNote
-from config import AppSettings, KEY_NAMES
+from config import AppSettings, KEY_NAMES, UIConstants, PianoRollConfig
 
 class NoteItem(QGraphicsRectItem):
-    """Enhanced graphics item for MIDI notes."""
-    def __init__(self, midi_note: MidiNote, note_height: float, seconds_per_pixel: float, parent=None):
+    """Graphics item for MIDI notes. Logic for visual representation."""
+    def __init__(self, midi_note: MidiNote, note_height: float, seconds_per_pixel: float, settings: AppSettings, parent=None):
         self.midi_note = midi_note
         self.note_height = note_height
         self.seconds_per_pixel = seconds_per_pixel
+        self.settings = settings
         x = midi_note.start / seconds_per_pixel
         y = self._pitch_to_y(midi_note.pitch)
         width = max(1, midi_note.duration / seconds_per_pixel)
@@ -29,15 +31,16 @@ class NoteItem(QGraphicsRectItem):
         self.update_appearance()
 
     def _pitch_to_y(self, pitch: int) -> float:
-        return (127 - pitch) * self.note_height
+        return (self.settings.ui_constants.piano_roll_highest_pitch - pitch) * self.note_height
 
     def _y_to_pitch(self, y: float) -> int:
-        return max(0, min(127, 127 - int(y / self.note_height)))
+        return max(0, min(127, self.settings.ui_constants.piano_roll_highest_pitch - int(y / self.note_height)))
 
     def update_appearance(self):
+        ui = self.settings.ui_constants
         if self.midi_note.selected:
-            self.setBrush(QBrush(QColor(255, 200, 100, 200)))
-            self.setPen(QPen(QColor(200, 150, 50)))
+            self.setBrush(QBrush(QColor.fromRgb(*ui.selected_note_color)))
+            self.setPen(QPen(QColor.fromRgb(*ui.selected_note_border_color)))
         else:
             velocity_ratio = self.midi_note.velocity / 127.0
             pitch_class = self.midi_note.pitch % 12
@@ -62,17 +65,29 @@ class NoteItem(QGraphicsRectItem):
         return super().itemChange(change, value)
 
 class PianoKeyboard(QWidget):
-    """Enhanced piano keyboard widget."""
-    def __init__(self, note_height: float, visible_range: Tuple[int, int], parent=None):
+    """Piano keyboard widget that displays pitch names and colors."""
+    def __init__(self, settings: AppSettings, parent=None):
         super().__init__(parent)
-        self.note_height = note_height
-        self.visible_range = visible_range
-        self.setFixedWidth(80)
-        self.setMinimumHeight(int((visible_range[1] - visible_range[0] + 1) * note_height))
+        self.settings = settings
+        self.note_height = self.settings.ui_constants.piano_roll_note_height
+        self.visible_range = self.settings.piano_roll_config.keyboard_visible_range
+        self.setFixedWidth(self.settings.ui_constants.piano_keyboard_width)
+        self.setMinimumHeight(int((self.visible_range[1] - self.visible_range[0] + 1) * self.note_height))
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        
+        # Get piano key colors directly from config
+        ui = self.settings.ui_constants
+        colors = {
+            "white_key": ui.white_key_color,
+            "white_key_alt": ui.white_key_alt_color,
+            "white_key_border": ui.white_key_border_color,
+            "black_key": ui.black_key_color,
+            "black_key_border": ui.black_key_border_color
+        }
+
         white_key_width, black_key_width = self.width(), int(self.width() * 0.6)
         white_key_notes, black_key_notes = {0, 2, 4, 5, 7, 9, 11}, {1, 3, 6, 8, 10}
         low_pitch, high_pitch = self.visible_range
@@ -82,22 +97,22 @@ class PianoKeyboard(QWidget):
             y = (high_pitch - pitch) * self.note_height
             note_class = pitch % 12
             if note_class in white_key_notes:
-                brush = QBrush(QColor(255, 255, 255) if pitch % 12 == 0 else QColor(248, 248, 248))
-                painter.fillRect(0, int(y), white_key_width, int(self.note_height), brush)
-                painter.setPen(QPen(QColor(200, 200, 200)))
+                brush_color = colors['white_key'] if pitch % 12 == 0 else colors['white_key_alt']
+                painter.fillRect(0, int(y), white_key_width, int(self.note_height), QBrush(QColor.fromRgb(*brush_color)))
+                painter.setPen(QPen(QColor.fromRgb(*colors['white_key_border'])))
                 painter.drawRect(0, int(y), white_key_width - 1, int(self.note_height) - 1)
                 if pitch % 12 == 0:
                     painter.setPen(Qt.GlobalColor.black)
                     painter.setFont(QFont("Arial", 8))
                     painter.drawText(5, int(y + self.note_height - 5), f"C{pitch // 12 - 1}")
             elif note_class in black_key_notes:
-                brush = QBrush(QColor(30, 30, 30))
-                painter.fillRect(0, int(y), black_key_width, int(self.note_height), brush)
-                painter.setPen(QPen(QColor(100, 100, 100)))
+                brush_color = colors['black_key']
+                painter.fillRect(0, int(y), black_key_width, int(self.note_height), QBrush(QColor.fromRgb(*brush_color)))
+                painter.setPen(QPen(QColor.fromRgb(*colors['black_key_border'])))
                 painter.drawRect(0, int(y), black_key_width - 1, int(self.note_height) - 1)
 
 class PianoRollWidget(QGraphicsView):
-    """Enhanced piano roll widget with pretty_midi integration."""
+    """Main piano roll view with grid and note rendering logic."""
     note_added = pyqtSignal(MidiNote)
     note_removed = pyqtSignal(MidiNote)
     selection_changed = pyqtSignal()
@@ -105,9 +120,11 @@ class PianoRollWidget(QGraphicsView):
     def __init__(self, document: MidiDocument, settings: AppSettings, parent=None):
         super().__init__(parent)
         self.document, self.settings = document, settings
-        self.current_track_index, self.current_tool = 0, "pencil"
-        self.note_height, self.seconds_per_pixel = 20, 0.1
-        self.lowest_pitch, self.highest_pitch = 12, 127
+        self.current_track_index, self.current_tool = 0, self.settings.piano_roll_config.default_tool
+        self.note_height = self.settings.ui_constants.piano_roll_note_height
+        self.seconds_per_pixel = self.settings.ui_constants.piano_roll_seconds_per_pixel
+        self.lowest_pitch = self.settings.ui_constants.piano_roll_lowest_pitch
+        self.highest_pitch = self.settings.ui_constants.piano_roll_highest_pitch
         self.scene = QGraphicsScene(self)
         self.setScene(self.scene)
         self.setRenderHint(QPainter.RenderHint.Antialiasing)
@@ -118,7 +135,7 @@ class PianoRollWidget(QGraphicsView):
 
     def setup_scene(self):
         scene_height = (self.highest_pitch - self.lowest_pitch + 1) * self.note_height
-        scene_width = 32 / self.seconds_per_pixel
+        scene_width = self.settings.piano_roll_config.scene_width_bars * self.document.time_signature[0] * (60.0 / self.document.tempo_bpm) / self.seconds_per_pixel
         self.scene.setSceneRect(0, 0, scene_width, scene_height)
         self.draw_grid()
 
@@ -127,26 +144,34 @@ class PianoRollWidget(QGraphicsView):
             if item.zValue() in [-1, -2]: self.scene.removeItem(item)
         scene_rect = self.scene.sceneRect()
         
+        # Grid pen configurations are now defined here
+        ui = self.settings.ui_constants
+        pen_configs = {
+            "measure": (ui.grid_measure_color, 2),
+            "beat": (ui.grid_beat_color, 1), 
+            "subdivision": (ui.grid_subdivision_color, 1),
+            "octave": (ui.grid_octave_color, 1),
+            "note": (ui.grid_note_color, 1)
+        }
+        
         # Vertical lines (time grid)
         tempo_bpm = self.document.tempo_bpm
         seconds_per_beat = 60.0 / tempo_bpm
         seconds_per_measure = seconds_per_beat * self.document.time_signature[0]
-        pen_measure = QPen(QColor(150, 150, 150), 2)
-        pen_beat = QPen(QColor(200, 200, 200), 1)
-        pen_subdivision = QPen(QColor(230, 230, 230), 1)
+        
         for x in range(int(scene_rect.width())):
             time_seconds = x * self.seconds_per_pixel
-            pen = pen_measure if abs(time_seconds % seconds_per_measure) < 1e-6 else \
-                  pen_beat if abs(time_seconds % seconds_per_beat) < 1e-6 else \
-                  pen_subdivision if abs(time_seconds % (seconds_per_beat / 4)) < 1e-6 else None
+            pen = None
+            if abs(time_seconds % seconds_per_measure) < 1e-6: pen = QPen(QColor.fromRgb(*pen_configs["measure"][0]), pen_configs["measure"][1])
+            elif abs(time_seconds % seconds_per_beat) < 1e-6: pen = QPen(QColor.fromRgb(*pen_configs["beat"][0]), pen_configs["beat"][1])
+            elif abs(time_seconds % (seconds_per_beat / 4)) < 1e-6: pen = QPen(QColor.fromRgb(*pen_configs["subdivision"][0]), pen_configs["subdivision"][1])
+            
             if pen: self.scene.addLine(x, 0, x, scene_rect.height(), pen).setZValue(-2)
 
         # Horizontal lines (pitch grid)
-        pen_octave = QPen(QColor(180, 180, 180), 1)
-        pen_note = QPen(QColor(240, 240, 240), 1)
         for pitch in range(self.lowest_pitch, self.highest_pitch + 1):
             y = (self.highest_pitch - pitch) * self.note_height
-            pen = pen_octave if pitch % 12 == 0 else pen_note
+            pen = QPen(QColor.fromRgb(*pen_configs["octave"][0]), pen_configs["octave"][1]) if pitch % 12 == 0 else QPen(QColor.fromRgb(*pen_configs["note"][0]), pen_configs["note"][1])
             self.scene.addLine(0, y, scene_rect.width(), y, pen).setZValue(-1)
 
     def get_current_track(self):
@@ -162,7 +187,7 @@ class PianoRollWidget(QGraphicsView):
         current_track = self.get_current_track()
         if current_track:
             for note in current_track.notes:
-                note_item = NoteItem(note, self.note_height, self.seconds_per_pixel)
+                note_item = NoteItem(note, self.note_height, self.seconds_per_pixel, self.settings)
                 self.scene.addItem(note_item)
                 self.note_items[note] = note_item
     
@@ -247,7 +272,7 @@ class PianoRollPanel(QWidget):
         controls = self._create_controls()
         layout.addWidget(controls)
         main_area = QHBoxLayout()
-        self.keyboard = PianoKeyboard(note_height=20, visible_range=(12, 127), parent=self)
+        self.keyboard = PianoKeyboard(self.settings, self)
         self.piano_roll = PianoRollWidget(self.document, self.settings, self)
         main_area.addWidget(self.keyboard)
         main_area.addWidget(self.piano_roll, 1)
@@ -256,36 +281,80 @@ class PianoRollPanel(QWidget):
         layout.addWidget(main_widget, 1)
     
     def _create_controls(self) -> QWidget:
-        controls = QFrame(frameShape=QFrame.Shape.StyledPanel, maximumHeight=80)
+        controls = QFrame(frameShape=QFrame.Shape.StyledPanel, maximumHeight=self.settings.ui_constants.control_panel_max_height)
+        controls.setStyleSheet(self.settings.ui_constants.control_frame_style)
         layout = QVBoxLayout(controls)
+        layout.setSpacing(self.settings.ui_constants.control_spacing)
+        layout.setContentsMargins(0,0,0,0)
+        
         top_row = QHBoxLayout()
-        top_row.addWidget(QLabel("Track:")); self.track_combo = QComboBox(); top_row.addWidget(self.track_combo)
-        top_row.addWidget(QLabel("Tempo:")); self.tempo_label = QLabel(f"{self.document.tempo_bpm:.1f} BPM"); self.tempo_label.setStyleSheet("font-weight: bold;"); top_row.addWidget(self.tempo_label)
-        top_row.addWidget(QLabel("Key:")); self.key_label = QLabel("Unknown"); self.key_label.setStyleSheet("font-weight: bold;"); top_row.addWidget(self.key_label)
+        top_row.addWidget(QLabel(self.settings.ui_constants.control_labels["track"])); self.track_combo = QComboBox(); top_row.addWidget(self.track_combo)
+        top_row.addWidget(QLabel(self.settings.ui_constants.control_labels["tempo"])); self.tempo_label = QLabel(f"{self.document.tempo_bpm:.1f} BPM"); self.tempo_label.setStyleSheet(self.settings.ui_constants.bold_label_style); top_row.addWidget(self.tempo_label)
+        top_row.addWidget(QLabel(self.settings.ui_constants.control_labels["key"])); self.key_label = QLabel(self.settings.ui_constants.unknown_key_text); self.key_label.setStyleSheet(self.settings.ui_constants.bold_label_style); top_row.addWidget(self.key_label)
         top_row.addStretch(); layout.addLayout(top_row)
         
         bottom_row = QHBoxLayout()
-        bottom_row.addWidget(QLabel("Tool:"))
-        self.pencil_btn = QPushButton("✏️ Pencil"); self.pencil_btn.setCheckable(True); self.pencil_btn.setChecked(True); bottom_row.addWidget(self.pencil_btn)
-        self.select_btn = QPushButton("🔍 Select"); self.select_btn.setCheckable(True); bottom_row.addWidget(self.select_btn)
-        self.erase_btn = QPushButton("🗑️ Erase"); self.erase_btn.setCheckable(True); bottom_row.addWidget(self.erase_btn)
+        bottom_row.addWidget(QLabel(self.settings.ui_constants.control_labels["tool"]))
+        
+        # Tool button logic moved here
+        tool_configs = self._get_tool_button_configs(self.settings.ui_constants)
+        self.pencil_btn = QPushButton(tool_configs["pencil"]["text"]); self.pencil_btn.setCheckable(True); self.pencil_btn.setChecked(True); self.pencil_btn.setToolTip(tool_configs["pencil"]["tooltip"]); bottom_row.addWidget(self.pencil_btn)
+        self.select_btn = QPushButton(tool_configs["select"]["text"]); self.select_btn.setCheckable(True); self.select_btn.setToolTip(tool_configs["select"]["tooltip"]); bottom_row.addWidget(self.select_btn)
+        self.erase_btn = QPushButton(tool_configs["erase"]["text"]); self.erase_btn.setCheckable(True); self.erase_btn.setToolTip(tool_configs["erase"]["tooltip"]); bottom_row.addWidget(self.erase_btn)
+        
         bottom_row.addWidget(QFrame(frameShape=QFrame.Shape.VLine))
         
-        bottom_row.addWidget(QLabel("Quantize:"))
-        quantize_16_btn = QPushButton("⏱️ 1/16"); quantize_16_btn.clicked.connect(lambda: self.piano_roll.quantize_selected_notes()); bottom_row.addWidget(quantize_16_btn)
-        quantize_8_btn = QPushButton("⏱️ 1/8"); quantize_8_btn.clicked.connect(lambda: self.piano_roll.quantize_selected_notes(60.0 / (self.document.tempo_bpm * 2))); bottom_row.addWidget(quantize_8_btn)
+        bottom_row.addWidget(QLabel(self.settings.ui_constants.control_labels["quantize"]))
+        
+        # Quantize button logic moved here
+        quantize_configs = self._get_quantize_button_configs(self.settings.ui_constants, self.settings.piano_roll_config)
+        for key, config in quantize_configs.items():
+            btn = QPushButton(config["text"])
+            btn.setToolTip(config["tooltip"])
+            btn.clicked.connect(lambda _, d=config["division"]: self.piano_roll.quantize_selected_notes(60.0 / (self.document.tempo_bpm * d)))
+            bottom_row.addWidget(btn)
+        
         bottom_row.addWidget(QFrame(frameShape=QFrame.Shape.VLine))
         
-        bottom_row.addWidget(QLabel("Velocity:"))
-        self.velocity_slider = QSlider(Qt.Orientation.Horizontal, range=(1, 127), value=self.settings.default_velocity, maximumWidth=100)
+        bottom_row.addWidget(QLabel(self.settings.ui_constants.control_labels["velocity"]))
+        self.velocity_slider = QSlider(Qt.Orientation.Horizontal, range=(1, 127), value=self.settings.default_velocity, maximumWidth=self.settings.ui_constants.velocity_slider_max_width)
         bottom_row.addWidget(self.velocity_slider)
         self.velocity_label = QLabel(str(self.settings.default_velocity))
         bottom_row.addWidget(self.velocity_label); bottom_row.addStretch(); layout.addLayout(bottom_row)
         
         self.update_track_combo()
         try: key_root, key_mode = self.document.estimate_key(); self.key_label.setText(f"{key_root} {key_mode}")
-        except: self.key_label.setText("Unknown")
+        except: self.key_label.setText(self.settings.ui_constants.unknown_key_text)
         return controls
+
+    def _get_tool_button_configs(self, ui_constants: UIConstants) -> Dict[str, Dict[str, Any]]:
+        """Logic for tool button configurations is now inside the panel class."""
+        return {
+            "pencil": {
+                "text": f"{ui_constants.tool_icons['pencil']} Pencil", 
+                "tooltip": "Add notes by clicking (P)"
+            },
+            "select": {
+                "text": f"{ui_constants.tool_icons['select']} Select",
+                "tooltip": "Select and move notes (S)"  
+            },
+            "erase": {
+                "text": f"{ui_constants.tool_icons['erase']} Erase",
+                "tooltip": "Remove notes by clicking (E)"
+            }
+        }
+    
+    def _get_quantize_button_configs(self, ui_constants: UIConstants, piano_roll_config: PianoRollConfig) -> Dict[str, Dict[str, Any]]:
+        """Logic for quantize button configurations is now inside the panel class."""
+        configs = {}
+        for key, label in ui_constants.quantize_labels.items():
+            division = piano_roll_config.quantize_options.get(key, 4.0)
+            configs[key] = {
+                "text": label,
+                "division": division,
+                "tooltip": f"Quantize selected notes to {key} note grid"
+            }
+        return configs
     
     def connect_signals(self):
         self.track_combo.currentIndexChanged.connect(self.on_track_changed)
@@ -300,7 +369,7 @@ class PianoRollPanel(QWidget):
     def update_track_combo(self):
         self.track_combo.clear()
         if not self.document.tracks:
-            self.track_combo.addItem("No tracks")
+            self.track_combo.addItem(self.settings.ui_constants.no_tracks_text)
             return
         for i, track in enumerate(self.document.tracks):
             display_name = f"{i+1}: {track.name}{' 🥁' if track.is_drum else ''}"
@@ -333,10 +402,36 @@ class PianoRollTestWindow(QMainWindow):
     """Test window for the piano roll."""
     def __init__(self):
         super().__init__()
-        self.document, self.settings = MidiDocument(), AppSettings()
+        self.settings = self._load_settings()
+        self.document = MidiDocument()
         self.create_test_data()
         self.init_ui()
     
+    def _load_settings(self, config_path: str = "config.json") -> AppSettings:
+        """Load settings from file, a logic function moved from config.py."""
+        if os.path.exists(config_path):
+            try:
+                with open(config_path, 'r') as f:
+                    data = json.load(f)
+                settings = AppSettings()
+                for key, value in data.items():
+                    if hasattr(settings, key) and not key.startswith('ui_'):
+                        setattr(settings, key, value)
+                return settings
+            except Exception as e:
+                print(f"Error loading settings: {e}")
+        return AppSettings()
+    
+    def _save_settings(self, config_path: str = "config.json"):
+        """Save settings to file, a logic function moved from config.py."""
+        try:
+            data = {k: v for k, v in self.settings.__dict__.items() 
+                   if not k.startswith('ui_')}
+            with open(config_path, 'w') as f:
+                json.dump(data, f, indent=2)
+        except Exception as e:
+            print(f"Error saving settings: {e}")
+
     def create_test_data(self):
         piano_track, bass_track, drum_track = self.document.add_track(name="Piano", program=0), self.document.add_track(name="Bass", program=32), self.document.add_track(name="Drums", is_drum=True)
         chords = [([60, 64, 67], 0.0, 2.0), ([57, 60, 64], 2.0, 4.0), ([53, 57, 60], 4.0, 6.0), ([55, 59, 62], 6.0, 8.0)]
@@ -360,6 +455,7 @@ class PianoRollTestWindow(QMainWindow):
         menubar = self.menuBar()
         file_menu = menubar.addMenu('File')
         file_menu.addAction(QAction('New', self, shortcut=QKeySequence.StandardKey.New, triggered=self.new_document))
+        file_menu.addAction(QAction('Save Settings', self, triggered=self.save_settings))
         edit_menu = menubar.addMenu('Edit')
         edit_menu.addAction(QAction('Select All', self, shortcut=QKeySequence.StandardKey.SelectAll, triggered=self.piano_roll_panel.piano_roll.select_all_notes))
         edit_menu.addAction(QAction('Delete Selected', self, shortcut=QKeySequence.StandardKey.Delete, triggered=self.piano_roll_panel.piano_roll.delete_selected_notes))
@@ -373,14 +469,26 @@ class PianoRollTestWindow(QMainWindow):
         self.piano_roll_panel.piano_roll.document = self.document
         self.piano_roll_panel.update_track_combo()
         self.piano_roll_panel.piano_roll.document_changed()
+
+    def save_settings(self):
+        self._save_settings()
+        self.statusBar().showMessage("Settings saved.")
     
     def analyze_key(self):
-        try: key_root, key_mode = self.document.estimate_key(); self.statusBar().showMessage(f"Estimated key: {key_root} {key_mode}"); self.piano_roll_panel.key_label.setText(f"{key_root} {key_mode}")
-        except Exception as e: self.statusBar().showMessage(f"Key analysis failed: {e}")
+        try: 
+            key_root, key_mode = self.document.estimate_key()
+            self.statusBar().showMessage(f"Estimated key: {key_root} {key_mode}")
+            self.piano_roll_panel.key_label.setText(f"{key_root} {key_mode}")
+        except Exception as e: 
+            self.statusBar().showMessage(f"Key analysis failed: {e}")
     
     def analyze_tempo(self):
-        try: tempo = self.document.tempo_bpm; self.statusBar().showMessage(f"Estimated tempo: {tempo:.1f} BPM"); self.piano_roll_panel.tempo_label.setText(f"{tempo:.1f} BPM")
-        except Exception as e: self.statusBar().showMessage(f"Tempo analysis failed: {e}")
+        try: 
+            tempo = self.document.tempo_bpm
+            self.statusBar().showMessage(f"Estimated tempo: {tempo:.1f} BPM")
+            self.piano_roll_panel.tempo_label.setText(f"{tempo:.1f} BPM")
+        except Exception as e: 
+            self.statusBar().showMessage(f"Tempo analysis failed: {e}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
