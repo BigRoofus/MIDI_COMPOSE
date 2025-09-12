@@ -12,8 +12,7 @@ from PyQt6.QtCore import Qt, QRectF, QPointF, pyqtSignal
 # Core MIDI and config imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.midi_data_model import MidiDocument, MidiNote
-from config import AppSettings
-from music_theory import KEY_NAMES
+from config import AppSettings, KEY_NAMES
 
 class NoteItem(QGraphicsRectItem):
     """Enhanced graphics item for MIDI notes."""
