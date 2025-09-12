@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-
-"""
-MIDI Data Model - Refactored for pretty_midi with robust error handling
-Enhanced version using pretty_midi as the foundation while maintaining MIDI_COMPOSE API
-"""
-
 import pretty_midi
 import numpy as np
 from typing import List, Dict, Optional, Tuple, Set, Iterator

@@ -1,5 +1,3 @@
-"""MIDI file import/export functionality"""
-
 from typing import Optional
 from .midi_data_model import MidiDocument
 

@@ -1,7 +1,3 @@
-"""
-Suggestion UI
-"""
-
 from typing import List, Optional, Tuple, Dict
 from dataclasses import dataclass
 from suggestion_types import MidiDocument, KeyAnalysisPoint, TonalityTransition, SlidingWindowKeyAnalyzer
