@@ -48,7 +48,7 @@ def create_application():
 def create_main_window():
     """Create and configure the main application window"""
     try:
-        from ui.app_window import MainWindow
+        from ui.main_ui import MainWindow
         from core.midi_data_model import MidiDocument
         from config import AppSettings
         
