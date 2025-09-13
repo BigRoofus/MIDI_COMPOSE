@@ -1,5 +1,5 @@
 try:
-    from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget
+    from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QHBoxLayout, QPushButton, QLabel
     from PyQt6.QtCore import Qt
 except ImportError:
     # Graceful degradation if PyQt6 not available
@@ -12,6 +12,7 @@ except ImportError:
 
 from core.midi_data_model import MidiDocument
 from config import AppSettings
+from ui.piano_roll import PianoRollPanel
 
 class MainWindow(QMainWindow):
     def __init__(self, document: MidiDocument, settings: AppSettings):
@@ -24,18 +25,44 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("MIDI_COMPOSE")
         self.setGeometry(100, 100, 1200, 800)
         
-        # Placeholder central widget
+        # Main layout
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-
-
-"""
-TRANSPORT CODE
-
-This code is used to create the visual design and logic
-for the Transport control at the top of the application.
-It includes buttons for play/pause, skip to beginning, and 
-skip to end, as well as a BPM display.
-The user may manually change the bpm here.
-"""
-
+        layout = QVBoxLayout(central_widget)
+        
+        # Transport controls
+        transport_widget = self.create_transport()
+        layout.addWidget(transport_widget)
+        
+        # Piano roll (main editing area)
+        self.piano_roll_panel = PianoRollPanel(self.document, self.settings)
+        layout.addWidget(self.piano_roll_panel, 1)  # Stretch factor 1
+    
+    def create_transport(self):
+        """Create the transport control section"""
+        transport = QWidget()
+        transport.setMaximumHeight(50)
+        layout = QHBoxLayout(transport)
+        
+        # Play controls
+        self.play_btn = QPushButton("▶")
+        self.play_btn.setToolTip("Play (Space)")
+        
+        self.stop_btn = QPushButton("⏹")
+        self.stop_btn.setToolTip("Stop")
+        
+        self.rewind_btn = QPushButton("⏮")
+        self.rewind_btn.setToolTip("Rewind to start")
+        
+        # BPM display
+        bpm_label = QLabel("BPM:")
+        self.bpm_display = QLabel(f"{self.document.tempo_bpm:.1f}")
+        
+        layout.addWidget(self.rewind_btn)
+        layout.addWidget(self.play_btn)
+        layout.addWidget(self.stop_btn)
+        layout.addStretch()
+        layout.addWidget(bpm_label)
+        layout.addWidget(self.bpm_display)
+        
+        return transport
